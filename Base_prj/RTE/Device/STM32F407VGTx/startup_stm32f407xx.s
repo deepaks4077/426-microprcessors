@@ -184,13 +184,9 @@ __Vectors_Size  EQU  __Vectors_End - __Vectors
 ; Reset handler
 Reset_Handler    PROC
                  EXPORT  Reset_Handler             [WEAK]
-        IMPORT  SystemInit
-        IMPORT  __main
-
-                 LDR     R0, =SystemInit
+								 IMPORT  example1
+								 LDR 		 R0, =example1
                  BLX     R0
-                 LDR     R0, =__main
-                 BX      R0
 				 NOP
                  ENDP
 
