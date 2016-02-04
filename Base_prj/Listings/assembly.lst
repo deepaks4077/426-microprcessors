@@ -6,14 +6,14 @@ ARM Macro Assembler    Page 1
 
     1 00000000                 AREA             text, CODE, READONLY
     2 00000000                 EXPORT           example1
-    3 00000000                 import           myoutput
+    3 00000000                 IMPORT           myoutput
     4 00000000         example1
     5 00000000         ;INITIALIZE THE LOOP
-    6 00000000 4823            LDR              R0, =myinput ; input array
-    7 00000002 4924            LDR              R1, =myoutput ; output array 
+    6 00000000 4824            LDR              R0, =myinput ; input array
+    7 00000002 4925            LDR              R1, =myoutput ; output array 
     8 00000004         
     9 00000004         ; transfer myoutput1 to myoutput HERE
-   10 00000004 4A24            LDR              R2, =mystate ; address of state
+   10 00000004 4A25            LDR              R2, =mystate ; address of state
                                                              data struct 
    11 00000006 ECB2 0A01       VLDR.F32         S0, [R2], #0x04 ; float q
    12 0000000A ECF2 0A01       VLDR.F32         S1, [R2], #0x04 ; float r
@@ -22,13 +22,13 @@ ARM Macro Assembler    Page 1
    15 00000016 ED92 2A00       VLDR.F32         S4, [R2]    ; float k
    16 0000001A         ; state data transfer complete
    17 0000001A         
-   18 0000001A 4B20            LDR              R3, =length ; int length
+   18 0000001A 4B21            LDR              R3, =length ; int length
    19 0000001C F04F 0400       MOV              R4, #0      ; loop tracker 
-   20 00000020 ED9F 3A1F       VLDR.F32         S6, =0.0    ; initial value for
+   20 00000020 ED9F 3A20       VLDR.F32         S6, =0.0    ; initial value for
                                                              output[i]
    21 00000024         loop
    22 00000024 429C            CMP              R4, R3
-   23 00000026 DC16            BGT              endfor      ;execute body of lo
+   23 00000026 DC18            BGT              endfor      ;execute body of lo
                                                             op
    24 00000028 EE71 1A80       VADD.F32         S3, S3, S0  ; p = p + q
    25 0000002C EE31 4AA0       VADD.F32         S8, S3, S1  ; p + r
@@ -46,36 +46,36 @@ ARM Macro Assembler    Page 1
    33 00000048         ;take care of variables for next iteration
    34 00000048         
    35 00000048 EEF0 4A43       VMOV.F32         S9, S6
-   36 0000004C ECE1 4A01       VSTR.F32         S9, [R1], #0x04
-   37 00000050 F104 0401       ADD              R4, R4, #1
-   38 00000054 E7E6            B                loop
-   39 00000056         endfor
-   40 00000056 4770            BX               LR
-   41 00000058         
-   42 00000058                 ALIGN
-   43 00000058 3DCCCCCD 
+   36 0000004C EDC1 4A00       VSTR.F32         S9, [R1]
+   37 00000050 F101 0104       ADD              R1, #0x04
+   38 00000054 F104 0401       ADD              R4, R4, #1
+   39 00000058 E7E4            B                loop
+   40 0000005A         endfor
+   41 0000005A 4770            BX               LR
+   42 0000005C         
+   43 0000005C                 ALIGN
+   44 0000005C 3DCCCCCD 
               3DCCCCCD 
               00000000 
               3DCCCCCD 
               00000000 mystate DCFS             0.1, 0.1, 0.0, 0.1, 0.0
-   44 0000006C 3F800000 
+   45 00000070 3F800000 
               3F800000 
               3F800000 
               3F800000 myinput DCFS             1.0, 1.0, 1.0, 1.0
-   45 0000007C 00000000 
 
 
 
 ARM Macro Assembler    Page 2 
 
 
+   46 00000080 00000000 
               00000000 
               00000000 
               00000000 myoutput1
                                DCFS             0.0, 0.0, 0.0, 0.0
-   46 0000008C 04 00   length  DCW              4
-   47 0000008E         
-   48 0000008E                 END
+   47 00000090 04 00   length  DCW              4
+   48 00000092                 END
               00 00 00000000 
               00000000 
               00000000 
@@ -94,11 +94,11 @@ s\Assembly.s
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 Relocatable symbols
 
-endfor 00000056
+endfor 0000005A
 
 Symbol: endfor
    Definitions
-      At line 39 in file Sources\Assembly.s
+      At line 40 in file Sources\Assembly.s
    Uses
       At line 23 in file Sources\Assembly.s
 Comment: endfor used once
@@ -110,11 +110,11 @@ Symbol: example1
    Uses
       At line 2 in file Sources\Assembly.s
 Comment: example1 used once
-length 0000008C
+length 00000090
 
 Symbol: length
    Definitions
-      At line 46 in file Sources\Assembly.s
+      At line 47 in file Sources\Assembly.s
    Uses
       At line 18 in file Sources\Assembly.s
 Comment: length used once
@@ -124,29 +124,29 @@ Symbol: loop
    Definitions
       At line 21 in file Sources\Assembly.s
    Uses
-      At line 38 in file Sources\Assembly.s
+      At line 39 in file Sources\Assembly.s
 Comment: loop used once
-myinput 0000006C
+myinput 00000070
 
 Symbol: myinput
    Definitions
-      At line 44 in file Sources\Assembly.s
+      At line 45 in file Sources\Assembly.s
    Uses
       At line 6 in file Sources\Assembly.s
 Comment: myinput used once
-myoutput1 0000007C
+myoutput1 00000080
 
 Symbol: myoutput1
    Definitions
-      At line 45 in file Sources\Assembly.s
+      At line 46 in file Sources\Assembly.s
    Uses
       None
 Comment: myoutput1 unused
-mystate 00000058
+mystate 0000005C
 
 Symbol: mystate
    Definitions
-      At line 43 in file Sources\Assembly.s
+      At line 44 in file Sources\Assembly.s
    Uses
       At line 10 in file Sources\Assembly.s
 Comment: mystate used once

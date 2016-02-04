@@ -33,7 +33,8 @@ loop
 	;take care of variables for next iteration
 	
 	VMOV.F32 S9, S6
-	VSTR.F32 S9, [R1], #0x04
+	VSTR.F32 S9, [R1]
+	ADD R1, #0x04
 	ADD R4, R4, #1
 	B loop
 endfor
@@ -44,7 +45,6 @@ mystate DCFS 0.1, 0.1, 0.0, 0.1, 0.0
 myinput DCFS 1.0, 1.0, 1.0, 1.0
 myoutput1 DCFS 0.0, 0.0, 0.0, 0.0
 length DCW 4
-
 	END
 		
  
