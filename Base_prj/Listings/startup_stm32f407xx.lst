@@ -494,14 +494,14 @@ ARM Macro Assembler    Page 8
                                PROC
   186 00000000                 EXPORT           Reset_Handler             [WEAK
 ]
-  187 00000000                 IMPORT           testbench_asm
+  187 00000000                 IMPORT           example1
   188 00000000 F8DF 0038       LDR.W            R0, =0xE000ED88
   189 00000004 6801            LDR              R1, [R0]
   190 00000006 F441 0170       ORR              R1, R1, #(0xF << 20)
   191 0000000A 6001            STR              R1, [R0]
   192 0000000C F3BF 8F4F       DSB
   193 00000010 F3BF 8F6F       ISB
-  194 00000014 480A            LDR              R0, =testbench_asm
+  194 00000014 480A            LDR              R0, =example1
   195 00000016 4780            BLX              R0
   196 00000018 BF00            NOP
   197 0000001A                 ENDP
@@ -1976,13 +1976,13 @@ Symbol: __use_two_region_memory
    Uses
       None
 Comment: __use_two_region_memory unused
-testbench_asm 00000000
+example1 00000000
 
-Symbol: testbench_asm
+Symbol: example1
    Definitions
       At line 187 in file RTE\Device\STM32F407VGTx\startup_stm32f407xx.s
    Uses
       At line 194 in file RTE\Device\STM32F407VGTx\startup_stm32f407xx.s
-Comment: testbench_asm used once
+Comment: example1 used once
 2 symbols
 447 symbols in table
