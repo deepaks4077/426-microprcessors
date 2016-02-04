@@ -185,6 +185,12 @@ __Vectors_Size  EQU  __Vectors_End - __Vectors
 Reset_Handler    PROC
                  EXPORT  Reset_Handler             [WEAK]
 								 IMPORT  example1
+								 LDR.W R0, =0xE000ED88
+								 LDR R1, [R0]
+								 ORR R1, R1, #(0xF << 20)
+								 STR R1, [R0]
+								 DSB
+								 ISB
 								 LDR 		 R0, =example1
                  BLX     R0
 				 NOP

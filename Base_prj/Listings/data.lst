@@ -5,30 +5,13 @@ ARM Macro Assembler    Page 1
 
 
     1 00000000                 AREA             myData, DATA, READWRITE
-    2 00000000                 EXPORT           mystring1
-    3 00000000                 EXPORT           mystring2
-    4 00000000 01 02 03 
-              04 05    mystring1
-                               DCB              1, 2, 3, 4, 5
-    5 00000005 AB AB AB 
-              AB AB AB 
-              AB AB AB 
-              AB AB AB 
-              AB AB AB 
-              AB AB AB 
-              AB AB AB 
-              AB AB AB 
-              AB AB AB 
-              AB AB AB 
-              AB AB AB 
-              AB AB AB 
-              AB AB AB 
-              AB AB AB 
-              AB AB AB 
-              AB AB AB 
-              AB AB    mystring2
-                               FILL             50,0xAB
-    6 00000037                 END
+    2 00000000                 EXPORT           myoutput
+    3 00000000 00000000 
+              00000000 
+              00000000 
+              00000000 myoutput
+                               DCFS             0.0, 0.0, 0.0, 0.0
+    4 00000010                 END
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=.\objects\data.d -o.\objects\data.o -IC:\Users\dsharm10\426\426
 -microprcessors\Base_prj\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Includ
@@ -49,21 +32,13 @@ Symbol: myData
    Uses
       None
 Comment: myData unused
-mystring1 00000000
+myoutput 00000000
 
-Symbol: mystring1
+Symbol: myoutput
    Definitions
-      At line 4 in file data.s
+      At line 3 in file data.s
    Uses
       At line 2 in file data.s
-Comment: mystring1 used once
-mystring2 00000005
-
-Symbol: mystring2
-   Definitions
-      At line 5 in file data.s
-   Uses
-      At line 3 in file data.s
-Comment: mystring2 used once
-3 symbols
-336 symbols in table
+Comment: myoutput used once
+2 symbols
+335 symbols in table
