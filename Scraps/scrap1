@@ -1,0 +1,6 @@
+;INITIALIZE THE LOOP
+	LDR R0, =myinput		; input array
+	LDR R1, =myoutput  ; output array 
+	
+	; transfer myoutput1 to myoutput HERE
+	LDR R2, =mystate		; address of state data struct 
