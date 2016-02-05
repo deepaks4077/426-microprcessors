@@ -28,21 +28,49 @@ Project File Date:  02/05/2016
 *** Using Compiler 'V5.05 update 2 (build 169)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Rebuild target 'Lab 1'
 compiling main.c...
-Sources\main.c(24): warning:  #177-D: variable "mean" was declared but never referenced
-        int mean = 0;
-Sources\main.c(25): warning:  #177-D: variable "std" was declared but never referenced
-        float std = 0.0;
-Sources\main.c(30): warning:  #177-D: variable "output_asm" was declared but never referenced
-        float output_asm[4] = {0.0,0.0,0.0,0.0};
-Sources\main.c(31): warning:  #177-D: variable "sub" was declared but never referenced
-        float* sub;
-Sources\main.c(35): warning:  #177-D: variable "i" was declared but never referenced
-        int i = 0; 
-Sources\main.c(85): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+Sources\main.c(115): warning:  #9-D: nested comment is not allowed
+        //************ DEMO VALUES ***************** //
+Sources\main.c(116): warning:  #9-D: nested comment is not allowed
+        /*printf("\n<------------Demo Values------------>\n");
+Sources\main.c(119): warning:  #9-D: nested comment is not allowed
+        //************ASSEMBLY testbench************ //
+Sources\main.c(124): warning:  #9-D: nested comment is not allowed
+        //************C filter********************** //
+Sources\main.c(128): warning:  #9-D: nested comment is not allowed
+        //************ Subtraction****************** //
+Sources\main.c(133): warning:  #9-D: nested comment is not allowed
+        //************Mean and Standard Deviation*** //
+Sources\main.c(138): warning:  #9-D: nested comment is not allowed
+        //************Correlation Array************* //
+Sources\main.c(143): warning:  #9-D: nested comment is not allowed
+        //************Convolution Array************* //
+Sources\main.c(155): warning:  #9-D: nested comment is not allowed
+        //************Difference Array*************** //
+Sources\main.c(161): warning:  #9-D: nested comment is not allowed
+        //************Mean and Standard Deviation*** //
+Sources\main.c(166): warning:  #9-D: nested comment is not allowed
+        //************Correlation Array************* //
+Sources\main.c(171): warning:  #9-D: nested comment is not allowed
+        //************Convolution Array************* //
+Sources\main.c(46): warning:  #177-D: variable "OutputArrayDemo" was declared but never referenced
+        float OutputArrayDemo[length_demo];
+Sources\main.c(47): warning:  #177-D: variable "InputArrayDemo" was declared but never referenced
+        float InputArrayDemo[length_demo];
+Sources\main.c(48): warning:  #177-D: variable "StatsArrayDemo" was declared but never referenced
+        float StatsArrayDemo[2];
+Sources\main.c(49): warning:  #177-D: variable "DifferenceArrayDemo" was declared but never referenced
+        float DifferenceArrayDemo[length_demo];
+Sources\main.c(50): warning:  #177-D: variable "CorrelationArrayDemo" was declared but never referenced
+        float CorrelationArrayDemo[2*length_demo - 1];
+Sources\main.c(51): warning:  #177-D: variable "ConvolutionArrayDemo" was declared but never referenced
+        float ConvolutionArrayDemo[2*length_demo -1];
+Sources\main.c(217): warning:  #1035-D: single-precision operand implicitly converted to double-precision
         if(kstate->p == 0.0 && kstate->r == 0.0){
-Sources\main.c(85): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+Sources\main.c(217): warning:  #1035-D: single-precision operand implicitly converted to double-precision
         if(kstate->p == 0.0 && kstate->r == 0.0){
-Sources\main.c: 7 warnings, 0 errors
+Sources\main.c(263): warning:  #940-D: missing return statement at end of non-void function "calculate_stats"
+  }
+Sources\main.c: 21 warnings, 0 errors
 assembling Assembly.s...
 Sources\Assembly.s(44): warning: A1581W: Added 2 bytes of padding at address 0x6e
 compiling fput_debug.c...
@@ -52,8 +80,8 @@ testbench_asm.s(17): warning: A1581W: Added 2 bytes of padding at address 0x2e
 assembling startup_stm32f407xx.s...
 compiling system_stm32f4xx.c...
 linking...
-Program Size: Code=15404 RO-data=776 RW-data=12 ZI-data=1884  
-".\Objects\Base_Project.axf" - 0 Error(s), 9 Warning(s).
+Program Size: Code=23108 RO-data=776 RW-data=12 ZI-data=1884  
+".\Objects\Base_Project.axf" - 0 Error(s), 23 Warning(s).
 
 <h2>Software Packages used:</h2>
 

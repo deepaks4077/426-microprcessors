@@ -11,8 +11,7 @@ Kalmanfilter_asm
 														; state data transfer complete
 	;LDR R3, [R3]							; load value contained in length into R3
 	MOV R4, #0								; loop tracker 
-	VLDR.F32 S6, =0.0 					;	initial value for output[i]
-	VMRS R5, FPSCR
+	VLDR.F32 S6, =0.0 				;	initial value for output[i]
 	
 loop 												; loop definition
 	CMP R4, R3
@@ -23,9 +22,10 @@ loop 												; loop definition
 	VLDR.F32 S5, [R0], #0x04 	; x_obs[i] = input_array[i]
 	VSUB.F32 S7, S5, S6 			; x_obs - x_pred[n-1] 
 	VFMA.F32 S6, S4, S7 			; x_pre[n] = x[n-1] + k*(message - x)  
- 	AND R5,R5,#6							; #15 FOR ALL FLAGS
-	CMP R5, #0
-	BGT enderror  
+ 	VMRS R5, FPSCR						; transfer FPSCR flags to R5
+	AND R5,R5,#7							; #15 FOR ALL FLAGS
+	CMP R5, #0					
+	BGT enderror  						; branch if greater than
 	
 	VMLS.F32 S3, S4, S3 			; p = (1-k)*p
 														; take care of variables for next iteration

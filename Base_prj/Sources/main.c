@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <demo.h>
 #include "arm_math.h"
 
 typedef struct kalman_state{
@@ -9,36 +10,53 @@ typedef struct kalman_state{
 	float k;
 }kalman_state;
 
-void printArray(float* array, int length);
+void printArray(float* array, int length); 
 void reverseArray(float* array, int length);
-void subtraction(float* output, float* input, int Length, float* sub);
-float mean(float* sub, int Length);
-float stad(float* sub, int Length, int mean);
+void subtract(float* input, float* output, int Length, float* sub);
+void verifyCorrectness(float* outputA, float* outputB, int Length);
+	
+float* calculate_stats(float* DifferenceArray, float* StatsArray, int Length);
+
 void corr(float* input, float* output, float* corre, int Length);
 void convolv(float* input, float* output, float* conv, int Length);
+
 void testbench_asm(float* InputArray, float* OutputArray, kalman_state* kstate, int Length);
 int Kalmanfilter_C(float* InputArray, float* OutputArray, kalman_state* kstate, int Length);	
 
+float* subtract_cmis(float* InputArray, float* OutputArray, float* DifferenceArray, int Length);
+float* calculate_stats_cmis(float* DifferenceArray, float* StatsArray, int Length);
+float* calculate_correlation_cmis(float* InputArray, float* OutputArray, float* CorrelationArray, int Length_Input, int Length_Output);
+float* calculate_convolution_cmis(float* InputArray, float* OutputArray, float* DestinationArray, int Length_Input, int Length_Output);
+
 int main()
 {
-	int mean = 0;
-	float std = 0.0;
 	
-	int Length = 4;
-	float input[4]  = {-1,0.125,31,1.0625};
-	float output[4] = {0.0,0.0,0.0,0.0};
-	float output_asm[4] = {0.0,0.0,0.0,0.0};
-	float* sub;
-	float corre[7];
-	float conv[7];
-
-	int i = 0; 
+	int Length = 5;
+	float input[5]  = {-0.665365,-0.329988,0.164465,0.043962,0.295885};//{-1,0.125,31,1.0625};
+	float output[5] = {0.0,0.0,0.0,0.0};
+	float StatsArray[2] = {0.0,0.0};
+	float DifferenceArray[5];
+	float corre[9];
+	float conv[9];
+	
+	//***SET STATE OF FILTER - SAME FOR DEMO*** //
 	kalman_state kstate;
+	
+	//*********DEMO VALUES********************* //
+	float OutputArrayDemo[length_demo];
+	float InputArrayDemo[length_demo];
+	float StatsArrayDemo[2];
+	float DifferenceArrayDemo[length_demo];
+	float CorrelationArrayDemo[2*length_demo - 1];
+	float ConvolutionArrayDemo[2*length_demo -1];
+
+	// INITIALIZE STATE VALUES //
 	kstate.q =	0.1;
 	kstate.r =	0.1;	
 	kstate.x =	0.0;
 	kstate.p =	0.1;
 	kstate.k =	0.0;
+	
 	
 	//************ASSEMBLY testbench************ //
 	testbench_asm(input,output,&kstate,Length);
@@ -49,6 +67,16 @@ int main()
 	printf("\nKALMAN FILTER\n");
 	Kalmanfilter_C(input,output,&kstate,Length);
 	
+	//************ Subtraction****************** //
+	printf("\nDIFFERENCE ARRAY\n");
+	subtract(input,output,Length,DifferenceArray);
+	printArray(DifferenceArray, Length);
+	
+	//************Mean and Standard Deviation*** //
+	printf("\nMean and Standard Deviation\n");
+	calculate_stats(DifferenceArray, StatsArray, Length);
+	printArray(StatsArray, 2);
+	
 	//************Correlation Array************* //
 	corr(input,output,corre,Length);
 	printf("\nCORRELATION ARRAY\n");
@@ -58,6 +86,98 @@ int main()
 	convolv(input,output,conv,Length);
 	printf("\nCONVOLUTION ARRAY\n");
 	printArray(conv,2*Length-1);
+	
+	// REVERSE OUTPUT ARRAY FOR DSP FUNCTIONS    //
+	reverseArray(output,Length);
+	printf("\n <-------- CMIS-DSP Functions -------> \n");
+	
+	//************Difference Array***************//
+	printf("\nDIFFERENCE ARRAY\n");
+	subtract_cmis(input, output, DifferenceArray, Length);
+	printArray(DifferenceArray, Length);
+	
+	//************Mean and Standard Deviation*** //
+	printf("\nMean and Standard Deviation\n");
+	calculate_stats_cmis(DifferenceArray, StatsArray, Length);
+	printArray(StatsArray, 2);
+	
+	//************Correlation Array************* //
+	calculate_correlation_cmis(input,output,corre,Length, Length);
+	printf("\nCORRELATION ARRAY\n");
+	printArray(corre,2*Length-1);
+	
+	//************Convolution Array************* //
+	calculate_convolution_cmis(input,output,conv,Length, Length);
+	printf("\nCONVOLUTION ARRAY\n");
+	printArray(conv,2*Length-1);
+	
+	/*
+	//************ DEMO VALUES ***************** //
+	/*printf("\n<------------Demo Values------------>\n");
+	
+	printArray(InputArrayDemo,length_demo);
+	//************ASSEMBLY testbench************ //
+	testbench_asm(InputArrayDemo,OutputArrayDemo,&kstate,length_demo);
+	printf("\nASSEMBLY TESTBENCH\n");
+	printArray(OutputArrayDemo,length_demo);
+	
+	//************C filter********************** //
+	printf("\nKALMAN FILTER\n");
+	Kalmanfilter_C(InputArrayDemo,OutputArrayDemo,&kstate,length_demo);
+	
+	//************ Subtraction****************** //
+	printf("\nDIFFERENCE ARRAY\n");
+	subtract(InputArrayDemo,OutputArrayDemo,length_demo,DifferenceArrayDemo);
+	printArray(DifferenceArrayDemo, length_demo);
+	
+	//************Mean and Standard Deviation*** //
+	printf("\nMean and Standard Deviation\n");
+	calculate_stats(DifferenceArrayDemo, StatsArrayDemo, length_demo);
+	printArray(StatsArrayDemo, 2);
+	
+	//************Correlation Array************* //
+	corr(InputArrayDemo,OutputArrayDemo,CorrelationArrayDemo,length_demo);
+	printf("\nCORRELATION ARRAY\n");
+	printArray(CorrelationArrayDemo,2*length_demo-1);
+	
+	//************Convolution Array************* //
+	convolv(InputArrayDemo,OutputArrayDemo,ConvolutionArrayDemo,length_demo);
+	printf("\nCONVOLUTION ARRAY\n");
+	printArray(ConvolutionArrayDemo,2*length_demo-1);
+	
+	printf("\nVERIFICATION\n");
+	printArray(OutputArrayDemo,length_demo);
+	// REVERSE OUTPUT ARRAY FOR DSP FUNCTIONS DEMO  //
+	reverseArray(OutputArrayDemo,length_demo);
+	
+	printf("\n <-------- CMIS-DSP Functions DEMO -------> \n");
+	
+	//************Difference Array*************** //
+	
+	printf("\nDIFFERENCE ARRAY\n");
+	subtract_cmis(InputArrayDemo, OutputArrayDemo, DifferenceArrayDemo, length_demo);
+	printArray(DifferenceArrayDemo, length_demo);
+	
+	//************Mean and Standard Deviation*** //
+	printf("\nMean and Standard Deviation\n");
+	calculate_stats_cmis(DifferenceArrayDemo, StatsArrayDemo, length_demo);
+	printArray(StatsArrayDemo, 2);
+	
+	//************Correlation Array************* //
+	calculate_correlation_cmis(InputArrayDemo,OutputArrayDemo,CorrelationArrayDemo,length_demo, length_demo);
+	printf("\nCORRELATION ARRAY\n");
+	printArray(CorrelationArrayDemo,2*length_demo-1);
+	
+	//************Convolution Array************* //
+	calculate_convolution_cmis(InputArrayDemo,OutputArrayDemo,ConvolutionArrayDemo,length_demo, length_demo);
+	printf("\nCONVOLUTION ARRAY\n");
+	printArray(ConvolutionArrayDemo,2*length_demo-1);
+	
+	printf("\nVERIFICATION\n");
+	printArray(OutputArrayDemo,length_demo);
+	verifyCorrectness(OutputArrayDemo,estimates,length_demo);
+	
+	*/
 	
 	return 0;
 }
@@ -77,6 +197,18 @@ void reverseArray(float* array, int length){
 		array[i] = array[length - i - 1];
 		array[length - i - 1] = temp;
 	}
+}
+
+void verifyCorrectness(float* outputA, float* outputB, int Length){
+	int i =0;
+	for(i=0;i<Length;i++){
+		if(outputA[i] != outputB[i]){
+			printf("\nIncorrect :( -> %f %f \n", outputA[i], outputB[i]);
+			return ;
+		}
+	}
+	
+	printf("\n CORRECT :D \n");
 }
 
 int Kalmanfilter_C(float* InputArray, float* OutputArray, kalman_state* kstate, int Length){
@@ -113,37 +245,29 @@ int Kalmanfilter_C(float* InputArray, float* OutputArray, kalman_state* kstate, 
 	return 0;
 }
 
-void subtraction(float* output, float* input, int Length, float* sub){
-	int i;
-	for(i=0;i<Length;i++){
-		*(sub+i) = input[i] - output[i];
-	}
-}	
-
-float mean(float* sub, int Length){
+float* calculate_stats(float* DifferenceArray, float* StatsArray, int Length){
 	int i;
 	float result;
+	//CALCULATE MEAN //
 	for(i=0;i<Length;i++){
-		result = result + *(sub+i);
+		result = result + DifferenceArray[i];
 	}
-	return result/Length;
+	
+	StatsArray[0] = result/Length; 
+	result = 0.0;
+	// CALCULATE STANDARD DEV //
+	for(i=0;i<Length;i++){
+		result += pow((DifferenceArray[i] - StatsArray[0]), 2);
+	}
+	StatsArray[1]  = sqrt(result/(Length-1));
 }
 
-
-float stad(float* sub, int Length, int mean){
+void subtract(float* input, float* output, int Length, float* sub){
 	int i;
-	int x[4] = {0.0,0.0,0.0,0.0};
-	float std = 0.0;
-	int y = 0;
 	for(i=0;i<Length;i++){
-		x[i] = pow((*(sub+i) - mean), 2);
+		sub[i] = input[i] - output[i];
 	}
-  for (i=0;i<Length;i++){
-		y = y + x[i];
-	}
-	std  = sqrt(y);
-  return std;
-}
+}	
 
 void corr(float* input, float* output, float* corre, int Length){
 	int i;
@@ -171,9 +295,10 @@ void convolv(float* input, float* output, float* conv,int Length){
 	int k = 0;
 	float sum = 0.0;
 	
+	// CONVOLUTION VECTOR IS INVERTED OVER THE ORIGIN //
 	reverseArray(output,Length);
-	printf("\nINVERTED OUTPUT\n");
-	printArray(output,Length);
+	//printf("\nINVERTED OUTPUT\n");
+	//printArray(output,Length);
 	for(i=-Length+1;i<Length;i++){
 		for(j=0;j<Length;j++){
 			if((j+i)<0){
@@ -188,5 +313,43 @@ void convolv(float* input, float* output, float* conv,int Length){
 		sum = 0;
 		k++;
 	}
+}
+
+/*
+ * CMSIS-DSP implementation of subtraction
+ */
+float* subtract_cmis(float* InputArray, float* OutputArray, float* DifferenceArray, int Length){	
+	arm_sub_f32(InputArray, OutputArray, DifferenceArray, Length);
+	return DifferenceArray;
+}
+
+/*
+ * CMSIS-DSP function to calculate the mean and standard deviation of the difference array
+ * StatsArray[0] = mean
+ * StatsArray[1] = standard deviation
+ */
+float* calculate_stats_cmis(float* DifferenceArray, float* StatsArray, int Length){
+  arm_mean_f32(DifferenceArray, Length, &StatsArray[0]);
+	arm_std_f32(DifferenceArray, Length, &StatsArray[1]);
+	
+	return StatsArray;
+}
+
+/*
+ * CMSIS implementation of correlation
+ */
+float* calculate_correlation_cmis(float* InputArray, float* OutputArray, float* CorrelationArray, int Length_Input, int Length_Output){
+	
+	arm_correlate_f32(InputArray, Length_Input, OutputArray, Length_Output, CorrelationArray);
+	return CorrelationArray;
+}
+
+/*
+ * CMSIS implementation of convolution
+ */
+float* calculate_convolution_cmis(float* InputArray, float* OutputArray, float* DestinationArray, int Length_Input, int Length_Output){
+	
+	arm_conv_f32(InputArray, Length_Input, OutputArray, Length_Output, DestinationArray);
+	return DestinationArray;
 }
 
