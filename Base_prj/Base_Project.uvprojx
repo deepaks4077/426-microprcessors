@@ -433,9 +433,9 @@
               <FilePath>.\data.s</FilePath>
             </File>
             <File>
-              <FileName>lab1_testbench.s</FileName>
+              <FileName>testbench_asm.s</FileName>
               <FileType>2</FileType>
-              <FilePath>.\lab1_testbench.s</FilePath>
+              <FilePath>.\testbench_asm.s</FilePath>
             </File>
           </Files>
         </Group>

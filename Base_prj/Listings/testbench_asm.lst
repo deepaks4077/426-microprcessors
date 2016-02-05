@@ -9,33 +9,28 @@ ARM Macro Assembler    Page 1
     3 00000000                 IMPORT           Kalmanfilter_asm
     4 00000000                 IMPORT           myoutput
     5 00000000         testbench_asm
-    6 00000000 480C            LDR              R0, =myinput ; input array
-    7 00000002 490D            LDR              R1, =myoutput ; output array 
-    8 00000004 4A0D            LDR              R2, =mystate ; address of state
-                                                             data struct 
-    9 00000006 4B0E            LDR              R3, =length ; int length
-   10 00000008 4C0E            LDR              R4, =Kalmanfilter_asm ; load th
-                                                            e address of the fi
-                                                            lter subroutine
-   11 0000000A 4720            BX               R4
-   12 0000000C         
-   13 0000000C                 ALIGN
-   14 0000000C 3DCCCCCD 
+    6 00000000         ; LDR R0, =myinput      ; input array
+    7 00000000         ; LDR R1, =myoutput       ; output array 
+    8 00000000         ; LDR R2, =mystate      ; address of state data struct 
+    9 00000000         ; LDR R3, =length       ; int length
+   10 00000000 F8DF C02C       LDR              R12, =Kalmanfilter_asm ; load t
+                                                            he address of the f
+                                                            ilter subroutine
+   11 00000004 4760            BX               R12
+   12 00000006         
+   13 00000006 00 00           ALIGN
+   14 00000008 3DCCCCCD 
               3DCCCCCD 
               00000000 
               3DCCCCCD 
               00000000 mystate DCFS             0.1, 0.1, 0.0, 0.1, 0.0
-   15 00000020 3F800000 
+   15 0000001C 3F800000 
               3F800000 
               3F800000 
               3F800000 myinput DCFS             1.0, 1.0, 1.0, 1.0
-   16 00000030 04 00   length  DCW              4
-   17 00000032                 END
+   16 0000002C 04 00   length  DCW              4
+   17 0000002E                 END
               00 00 00000000 
-              00000000 
-              00000000 
-              00000000 
-              00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=.\objects\testbench_asm.d -o.\objects\testbench_asm.o -IC:\User
 s\dsharm10\426\426-microprcessors\Base_prj\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\
@@ -49,30 +44,30 @@ _asm.lst testbench_asm.s
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 Relocatable symbols
 
-length 00000030
+length 0000002C
 
 Symbol: length
    Definitions
       At line 16 in file testbench_asm.s
    Uses
-      At line 9 in file testbench_asm.s
-Comment: length used once
-myinput 00000020
+      None
+Comment: length unused
+myinput 0000001C
 
 Symbol: myinput
    Definitions
       At line 15 in file testbench_asm.s
    Uses
-      At line 6 in file testbench_asm.s
-Comment: myinput used once
-mystate 0000000C
+      None
+Comment: myinput unused
+mystate 00000008
 
 Symbol: mystate
    Definitions
       At line 14 in file testbench_asm.s
    Uses
-      At line 8 in file testbench_asm.s
-Comment: mystate used once
+      None
+Comment: mystate unused
 testbench_asm 00000000
 
 Symbol: testbench_asm
@@ -110,7 +105,7 @@ Symbol: myoutput
    Definitions
       At line 4 in file testbench_asm.s
    Uses
-      At line 7 in file testbench_asm.s
-Comment: myoutput used once
+      None
+Comment: myoutput unused
 2 symbols
 343 symbols in table

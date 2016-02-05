@@ -22,16 +22,38 @@ Dialog DLL:      TCM.DLL V1.14.5.0
  
 <h2>Project:</h2>
 C:\Users\dsharm10\426\426-microprcessors\Base_prj\Base_Project.uvprojx
-Project File Date:  02/04/2016
+Project File Date:  02/05/2016
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.05 update 2 (build 169)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
-Build target 'Lab 1'
+Rebuild target 'Lab 1'
+compiling main.c...
+Sources\main.c(24): warning:  #177-D: variable "mean" was declared but never referenced
+        int mean = 0;
+Sources\main.c(25): warning:  #177-D: variable "std" was declared but never referenced
+        float std = 0.0;
+Sources\main.c(30): warning:  #177-D: variable "output_asm" was declared but never referenced
+        float output_asm[4] = {0.0,0.0,0.0,0.0};
+Sources\main.c(31): warning:  #177-D: variable "sub" was declared but never referenced
+        float* sub;
+Sources\main.c(35): warning:  #177-D: variable "i" was declared but never referenced
+        int i = 0; 
+Sources\main.c(85): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+        if(kstate->p == 0.0 && kstate->r == 0.0){
+Sources\main.c(85): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+        if(kstate->p == 0.0 && kstate->r == 0.0){
+Sources\main.c: 7 warnings, 0 errors
 assembling Assembly.s...
-Sources\Assembly.s(32): warning: A1581W: Added 2 bytes of padding at address 0x52
+Sources\Assembly.s(44): warning: A1581W: Added 2 bytes of padding at address 0x6e
+compiling fput_debug.c...
+assembling data.s...
+assembling testbench_asm.s...
+testbench_asm.s(17): warning: A1581W: Added 2 bytes of padding at address 0x2e
+assembling startup_stm32f407xx.s...
+compiling system_stm32f4xx.c...
 linking...
-Program Size: Code=7056 RO-data=612 RW-data=28 ZI-data=1884  
-".\Objects\Base_Project.axf" - 0 Error(s), 1 Warning(s).
+Program Size: Code=15404 RO-data=776 RW-data=12 ZI-data=1884  
+".\Objects\Base_Project.axf" - 0 Error(s), 9 Warning(s).
 
 <h2>Software Packages used:</h2>
 

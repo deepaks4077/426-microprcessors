@@ -3,10 +3,10 @@
 	IMPORT Kalmanfilter_asm
 	IMPORT myoutput
 testbench_asm
-	LDR R0, =myinput						; input array
-	LDR R1, =myoutput  					; output array 
-	LDR R2, =mystate						; address of state data struct 
-	LDR R3, =length 						; int length
+;	LDR R0, =myinput						; input array
+;	LDR R1, =myoutput  					; output array 
+;	LDR R2, =mystate						; address of state data struct 
+;	LDR R3, =length 						; int length
 	LDR R12, =Kalmanfilter_asm  	; load the address of the filter subroutine
 	BX R12						
 	
