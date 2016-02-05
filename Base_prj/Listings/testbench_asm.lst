@@ -1,0 +1,116 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 AREA             text, CODE, READONLY
+    2 00000000                 EXPORT           testbench_asm
+    3 00000000                 IMPORT           Kalmanfilter_asm
+    4 00000000                 IMPORT           myoutput
+    5 00000000         testbench_asm
+    6 00000000 480C            LDR              R0, =myinput ; input array
+    7 00000002 490D            LDR              R1, =myoutput ; output array 
+    8 00000004 4A0D            LDR              R2, =mystate ; address of state
+                                                             data struct 
+    9 00000006 4B0E            LDR              R3, =length ; int length
+   10 00000008 4C0E            LDR              R4, =Kalmanfilter_asm ; load th
+                                                            e address of the fi
+                                                            lter subroutine
+   11 0000000A 4720            BX               R4
+   12 0000000C         
+   13 0000000C                 ALIGN
+   14 0000000C 3DCCCCCD 
+              3DCCCCCD 
+              00000000 
+              3DCCCCCD 
+              00000000 mystate DCFS             0.1, 0.1, 0.0, 0.1, 0.0
+   15 00000020 3F800000 
+              3F800000 
+              3F800000 
+              3F800000 myinput DCFS             1.0, 1.0, 1.0, 1.0
+   16 00000030 04 00   length  DCW              4
+   17 00000032                 END
+              00 00 00000000 
+              00000000 
+              00000000 
+              00000000 
+              00000000 
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=.\objects\testbench_asm.d -o.\objects\testbench_asm.o -IC:\User
+s\dsharm10\426\426-microprcessors\Base_prj\RTE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\
+4.5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\CMSI
+S\Device\ST\STM32F4xx\Include --predefine="__UVISION_VERSION SETA 515" --predef
+ine="_RTE_ SETA 1" --predefine="STM32F407xx SETA 1" --list=.\listings\testbench
+_asm.lst testbench_asm.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+length 00000030
+
+Symbol: length
+   Definitions
+      At line 16 in file testbench_asm.s
+   Uses
+      At line 9 in file testbench_asm.s
+Comment: length used once
+myinput 00000020
+
+Symbol: myinput
+   Definitions
+      At line 15 in file testbench_asm.s
+   Uses
+      At line 6 in file testbench_asm.s
+Comment: myinput used once
+mystate 0000000C
+
+Symbol: mystate
+   Definitions
+      At line 14 in file testbench_asm.s
+   Uses
+      At line 8 in file testbench_asm.s
+Comment: mystate used once
+testbench_asm 00000000
+
+Symbol: testbench_asm
+   Definitions
+      At line 5 in file testbench_asm.s
+   Uses
+      At line 2 in file testbench_asm.s
+Comment: testbench_asm used once
+text 00000000
+
+Symbol: text
+   Definitions
+      At line 1 in file testbench_asm.s
+   Uses
+      None
+Comment: text unused
+5 symbols
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+External symbols
+
+Kalmanfilter_asm 00000000
+
+Symbol: Kalmanfilter_asm
+   Definitions
+      At line 3 in file testbench_asm.s
+   Uses
+      At line 10 in file testbench_asm.s
+Comment: Kalmanfilter_asm used once
+myoutput 00000000
+
+Symbol: myoutput
+   Definitions
+      At line 4 in file testbench_asm.s
+   Uses
+      At line 7 in file testbench_asm.s
+Comment: myoutput used once
+2 symbols
+343 symbols in table
