@@ -17,7 +17,6 @@ typedef struct kalman_state{
 void printArray(float* array, int length); 
 void reverseArray(float* array, int length);
 void subtract(float* input, float* output, int Length, float* sub);
-void verifyCorrectness(float* outputA, float* outputB, int Length);
 float* calculate_stats(float* DifferenceArray, float* StatsArray, int Length);
 void corr(float* input, float* output, float* corre, int Length);
 void convolv(float* input, float* output, float* conv, int Length);
