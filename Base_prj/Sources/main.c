@@ -111,84 +111,16 @@ int main()
 	printf("\nCONVOLUTION ARRAY\n");
 	printArray(conv,2*Length-1);
 	
-	/*
-	//************ DEMO VALUES ***************** //
-	/*printf("\n<------------Demo Values------------>\n");
-	
-	printArray(InputArrayDemo,length_demo);
-	//************ASSEMBLY testbench************ //
-	testbench_asm(InputArrayDemo,OutputArrayDemo,&kstate,length_demo);
-	printf("\nASSEMBLY TESTBENCH\n");
-	printArray(OutputArrayDemo,length_demo);
-	
-	//************C filter********************** //
-	printf("\nKALMAN FILTER\n");
-	Kalmanfilter_C(InputArrayDemo,OutputArrayDemo,&kstate,length_demo);
-	
-	//************ Subtraction****************** //
-	printf("\nDIFFERENCE ARRAY\n");
-	subtract(InputArrayDemo,OutputArrayDemo,length_demo,DifferenceArrayDemo);
-	printArray(DifferenceArrayDemo, length_demo);
-	
-	//************Mean and Standard Deviation*** //
-	printf("\nMean and Standard Deviation\n");
-	calculate_stats(DifferenceArrayDemo, StatsArrayDemo, length_demo);
-	printArray(StatsArrayDemo, 2);
-	
-	//************Correlation Array************* //
-	corr(InputArrayDemo,OutputArrayDemo,CorrelationArrayDemo,length_demo);
-	printf("\nCORRELATION ARRAY\n");
-	printArray(CorrelationArrayDemo,2*length_demo-1);
-	
-	//************Convolution Array************* //
-	convolv(InputArrayDemo,OutputArrayDemo,ConvolutionArrayDemo,length_demo);
-	printf("\nCONVOLUTION ARRAY\n");
-	printArray(ConvolutionArrayDemo,2*length_demo-1);
-	
-	printf("\nVERIFICATION\n");
-	printArray(OutputArrayDemo,length_demo);
-	// REVERSE OUTPUT ARRAY FOR DSP FUNCTIONS DEMO  //
-	reverseArray(OutputArrayDemo,length_demo);
-	
-	printf("\n <-------- CMIS-DSP Functions DEMO -------> \n");
-	
-	//************Difference Array*************** //
-	
-	printf("\nDIFFERENCE ARRAY\n");
-	subtract_cmis(InputArrayDemo, OutputArrayDemo, DifferenceArrayDemo, length_demo);
-	printArray(DifferenceArrayDemo, length_demo);
-	
-	//************Mean and Standard Deviation*** //
-	printf("\nMean and Standard Deviation\n");
-	calculate_stats_cmis(DifferenceArrayDemo, StatsArrayDemo, length_demo);
-	printArray(StatsArrayDemo, 2);
-	
-	//************Correlation Array************* //
-	calculate_correlation_cmis(InputArrayDemo,OutputArrayDemo,CorrelationArrayDemo,length_demo, length_demo);
-	printf("\nCORRELATION ARRAY\n");
-	printArray(CorrelationArrayDemo,2*length_demo-1);
-	
-	//************Convolution Array************* //
-	calculate_convolution_cmis(InputArrayDemo,OutputArrayDemo,ConvolutionArrayDemo,length_demo, length_demo);
-	printf("\nCONVOLUTION ARRAY\n");
-	printArray(ConvolutionArrayDemo,2*length_demo-1);
-	
-	printf("\nVERIFICATION\n");
-	printArray(OutputArrayDemo,length_demo);
-	verifyCorrectness(OutputArrayDemo,estimates,length_demo);
-	
-	*/
-	
 	return 0;
 }
-
-void printArray(float* array, int length){
+	//********PRINTS OUT AN ARRAY************** //
+void printArray(float* array, int length){  
 	int i =0;
 	for(i=0;i<length;i++){
 		printf("%f \n", *(array+i));
 	}
 }
-
+	//****REVERSES THE ARRAY FOR CONVOLUTION*** //
 void reverseArray(float* array, int length){
 	int i =0;
 	float temp = 0.0;
@@ -199,17 +131,6 @@ void reverseArray(float* array, int length){
 	}
 }
 
-void verifyCorrectness(float* outputA, float* outputB, int Length){
-	int i =0;
-	for(i=0;i<Length;i++){
-		if(outputA[i] != outputB[i]){
-			printf("\nIncorrect :( -> %f %f \n", outputA[i], outputB[i]);
-			return ;
-		}
-	}
-	
-	printf("\n CORRECT :D \n");
-}
 
 int Kalmanfilter_C(float* InputArray, float* OutputArray, kalman_state* kstate, int Length){
 
@@ -245,6 +166,7 @@ int Kalmanfilter_C(float* InputArray, float* OutputArray, kalman_state* kstate, 
 	return 0;
 }
 
+//*********CALCULATES THE STANDARD DEVIATION AND MEAN******* //
 float* calculate_stats(float* DifferenceArray, float* StatsArray, int Length){
 	int i;
 	float result;
@@ -269,6 +191,7 @@ void subtract(float* input, float* output, int Length, float* sub){
 	}
 }	
 
+//********CORRELTATION COMPUTION******** //
 void corr(float* input, float* output, float* corre, int Length){
 	int i;
 	int j;
@@ -290,6 +213,7 @@ void corr(float* input, float* output, float* corre, int Length){
 	}
 }
 
+//**********CONVOLUTION******* //
 void convolv(float* input, float* output, float* conv,int Length){
 	int i, j;
 	int k = 0;
@@ -297,8 +221,6 @@ void convolv(float* input, float* output, float* conv,int Length){
 	
 	// CONVOLUTION VECTOR IS INVERTED OVER THE ORIGIN //
 	reverseArray(output,Length);
-	//printf("\nINVERTED OUTPUT\n");
-	//printArray(output,Length);
 	for(i=-Length+1;i<Length;i++){
 		for(j=0;j<Length;j++){
 			if((j+i)<0){
