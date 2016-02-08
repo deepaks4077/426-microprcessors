@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <demo.h>
+//#include <demo.h>
 #include "arm_math.h"
 
 typedef struct kalman_state{
@@ -43,12 +43,12 @@ int main()
 	kalman_state kstate;
 	
 	//*********DEMO VALUES********************* //
-	float OutputArrayDemo[length_demo];
-	float InputArrayDemo[length_demo];
+	float OutputArrayDemo[5];
+	float InputArrayDemo[5];
 	float StatsArrayDemo[2];
-	float DifferenceArrayDemo[length_demo];
-	float CorrelationArrayDemo[2*length_demo - 1];
-	float ConvolutionArrayDemo[2*length_demo -1];
+	float DifferenceArrayDemo[5];
+	float CorrelationArrayDemo[9];
+	float ConvolutionArrayDemo[9];
 
 	// INITIALIZE STATE VALUES //
 	kstate.q =	0.1;

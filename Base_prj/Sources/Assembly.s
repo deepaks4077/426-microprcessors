@@ -1,5 +1,14 @@
+;*****REGISTERS********************************************
+;R0 => used to show if a flag has been raised
+;R1 => stores the values of output from the kalman filter 
+;R2 => stores the address for the kalman state
+;R3 => Length of the input
+;S6 => i used for iterating 
+;**********************************************************	
+
 	AREA  text, CODE, READONLY
 	EXPORT Kalmanfilter_asm
+
 Kalmanfilter_asm
 	PUSH {R4-R8,R10,R11}
 	;INITIALIZE THE LOOP;
