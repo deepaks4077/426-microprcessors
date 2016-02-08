@@ -2,6 +2,10 @@
 //#include <demo.h>
 #include "arm_math.h"
 
+
+/*
+*	The Kalman filter state structure
+*/
 typedef struct kalman_state{
 	float q;
 	float r;
@@ -14,15 +18,11 @@ void printArray(float* array, int length);
 void reverseArray(float* array, int length);
 void subtract(float* input, float* output, int Length, float* sub);
 void verifyCorrectness(float* outputA, float* outputB, int Length);
-	
 float* calculate_stats(float* DifferenceArray, float* StatsArray, int Length);
-
 void corr(float* input, float* output, float* corre, int Length);
 void convolv(float* input, float* output, float* conv, int Length);
-
 void testbench_asm(float* InputArray, float* OutputArray, kalman_state* kstate, int Length);
 int Kalmanfilter_C(float* InputArray, float* OutputArray, kalman_state* kstate, int Length);	
-
 float* subtract_cmis(float* InputArray, float* OutputArray, float* DifferenceArray, int Length);
 float* calculate_stats_cmis(float* DifferenceArray, float* StatsArray, int Length);
 float* calculate_correlation_cmis(float* InputArray, float* OutputArray, float* CorrelationArray, int Length_Input, int Length_Output);
@@ -132,6 +132,19 @@ void reverseArray(float* array, int length){
 }
 
 
+/**
+  * @brief  The Kalman filter function in C
+  *         Takes in the input array, output array, filter state
+  *         Updates the output array with filtered values.
+  *
+  * @param  InputArray 	-> The input array
+  *			OutputArray -> The output array updated by this function
+  *			kstate 		-> The kalman state struct
+  *			Length 		-> The length of InputArray and OutputArray
+  *
+  * @retval 1 if error
+  *			0 if successful
+  */
 int Kalmanfilter_C(float* InputArray, float* OutputArray, kalman_state* kstate, int Length){
 
 	int i = 0;
@@ -166,7 +179,17 @@ int Kalmanfilter_C(float* InputArray, float* OutputArray, kalman_state* kstate, 
 	return 0;
 }
 
-//*********CALCULATES THE STANDARD DEVIATION AND MEAN******* //
+/**
+  * @brief  Calculate the standard deviation and mean
+  *         
+  * @param  DifferenceArray	-> The input array
+  *			StatsArray[0] 	-> The mean of the DifferenceArray 
+  *			StatsArray[1] 	-> The standard deviation of the DifferenceArray		
+  *			Length 			-> The length of the DifferenceArray
+  *
+  * @retval None
+  */
+//**************** //
 float* calculate_stats(float* DifferenceArray, float* StatsArray, int Length){
 	int i;
 	float result;
