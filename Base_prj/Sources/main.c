@@ -25,8 +25,8 @@ void testbench_asm(float* InputArray, float* OutputArray, kalman_state* kstate, 
 int Kalmanfilter_C(float* InputArray, float* OutputArray, kalman_state* kstate, int Length);	
 float* subtract_cmis(float* InputArray, float* OutputArray, float* DifferenceArray, int Length);
 float* calculate_stats_cmis(float* DifferenceArray, float* StatsArray, int Length);
-float* calculate_correlation_cmis(float* InputArray, float* OutputArray, float* CorrelationArray, int Length_Input, int Length_Output);
-float* calculate_convolution_cmis(float* InputArray, float* OutputArray, float* DestinationArray, int Length_Input, int Length_Output);
+float* calculate_correlation_cmis(float* InputArray, float* OutputArray, float* CorrelationArray, int lengthInput, int lengthOutput);
+float* calculate_convolution_cmis(float* InputArray, float* OutputArray, float* ConvolutionArray, int lengthInput, int lengthOutput);
 
 int main()
 {
@@ -189,7 +189,6 @@ int Kalmanfilter_C(float* InputArray, float* OutputArray, kalman_state* kstate, 
   *
   * @retval None
   */
-//**************** //
 float* calculate_stats(float* DifferenceArray, float* StatsArray, int Length){
 	int i;
 	float result;
@@ -207,6 +206,16 @@ float* calculate_stats(float* DifferenceArray, float* StatsArray, int Length){
 	StatsArray[1]  = sqrt(result/(Length-1));
 }
 
+/**
+  * @brief  Calculate the difference between input and output
+  *         
+  * @param  input	        -> The input array
+  *			output       	-> The output array
+  *			sub 	        -> The difference array updated by this function
+  *			Length 			-> The length of sub, input and output
+  *
+  * @retval None
+  */
 void subtract(float* input, float* output, int Length, float* sub){
 	int i;
 	for(i=0;i<Length;i++){
@@ -214,7 +223,16 @@ void subtract(float* input, float* output, int Length, float* sub){
 	}
 }	
 
-//********CORRELTATION COMPUTION******** //
+/**
+  * @brief  Calculate the correlation array
+  *         
+  * @param  input	        -> The input array
+  *			output       	-> The output array
+  *			corre 	        -> The correlation array updated by this function
+  *			Length 			-> The length of input and output
+  *
+  * @retval None
+  */
 void corr(float* input, float* output, float* corre, int Length){
 	int i;
 	int j;
@@ -236,7 +254,16 @@ void corr(float* input, float* output, float* corre, int Length){
 	}
 }
 
-//**********CONVOLUTION******* //
+/**
+  * @brief  Calculate the convolution array
+  *         
+  * @param  input	        -> The input array
+  *			output       	-> The output array
+  *			corre 	        -> The convolution array updated by this function
+  *			Length 			-> The length of input and output
+  *
+  * @retval None
+  */
 void convolv(float* input, float* output, float* conv,int Length){
 	int i, j;
 	int k = 0;
@@ -260,18 +287,28 @@ void convolv(float* input, float* output, float* conv,int Length){
 	}
 }
 
-/*
- * CMSIS-DSP implementation of subtraction
- */
+/**
+  * @brief  The CMSIS-DSP implementation of subtraction
+  *         
+  * @param  InputArray	    -> The input array
+  *			OutputArray     -> The output array
+  *			DifferenceArray -> The Difference array updated by this function 
+  *			Length 			-> The length of InputArray, OutputArray and DifferenceArray
+  *
+  * @retval DifferenceArray -> A pointer to the DifferenceArray
+  */
 float* subtract_cmis(float* InputArray, float* OutputArray, float* DifferenceArray, int Length){	
 	arm_sub_f32(InputArray, OutputArray, DifferenceArray, Length);
 	return DifferenceArray;
 }
 
 /*
- * CMSIS-DSP function to calculate the mean and standard deviation of the difference array
- * StatsArray[0] = mean
- * StatsArray[1] = standard deviation
+ * @brief   The CMSIS-DSP function to calculate the mean and standard deviation of the difference array
+ * 
+ * @param   DifferenceArray-> The difference array of the input and output
+ *			StatsArray[0]  -> mean
+ * 			StatsArray[1]  -> standard deviation
+ *			Length 		   -> array The length of the difference array
  */
 float* calculate_stats_cmis(float* DifferenceArray, float* StatsArray, int Length){
   arm_mean_f32(DifferenceArray, Length, &StatsArray[0]);
@@ -281,20 +318,36 @@ float* calculate_stats_cmis(float* DifferenceArray, float* StatsArray, int Lengt
 }
 
 /*
- * CMSIS implementation of correlation
+ * @brief   The CMSIS-DSP function to calculate correlation
+ * 
+ * @param   InputArray        -> The input array
+ * 			OutputArray       -> The output array
+ *			CorrelationArray  -> The correlation array updated by this function
+ *			lengthInput       -> Length of the input array
+ *			lengthOutput	  -> Length of the output array
+ *
+ * @retval	CorrelationArray  -> pointer to the correlation array
  */
-float* calculate_correlation_cmis(float* InputArray, float* OutputArray, float* CorrelationArray, int Length_Input, int Length_Output){
+float* calculate_correlation_cmis(float* InputArray, float* OutputArray, float* CorrelationArray, int lengthInput, int lengthOutput){
 	
-	arm_correlate_f32(InputArray, Length_Input, OutputArray, Length_Output, CorrelationArray);
+	arm_correlate_f32(InputArray, lengthInput, OutputArray, lengthOutput, CorrelationArray);
 	return CorrelationArray;
 }
 
 /*
- * CMSIS implementation of convolution
+ * @brief   The CMSIS-DSP function to calculate convolution
+ * 
+ * @param   InputArray        -> The input array
+ * 			OutputArray       -> The output array
+ *			ConvolutionArray  -> The convolution array updated by this function
+ *			lengthInput       -> Length of the input array
+ *			lengthOutput	  -> Length of the output array
+ *
+ * @retval	ConvolutionArray  -> pointer to the convolution array
  */
-float* calculate_convolution_cmis(float* InputArray, float* OutputArray, float* DestinationArray, int Length_Input, int Length_Output){
+float* calculate_convolution_cmis(float* InputArray, float* OutputArray, float* ConvolutionArray, int lengthInput, int lengthOutput){
 	
-	arm_conv_f32(InputArray, Length_Input, OutputArray, Length_Output, DestinationArray);
-	return DestinationArray;
+	arm_conv_f32(InputArray, lengthInput, OutputArray, lengthOutput, ConvolutionArray);
+	return ConvolutionArray;
 }
 
