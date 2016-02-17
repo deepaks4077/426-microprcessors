@@ -14,23 +14,27 @@
 #include "supporting_functions.h"
 
 /* Private variables ---------------------------------------------------------*/
-GPIO_InitTypeDef* GPIO_A_Init =  {.Pin = GPIO_PIN_All, .Mode =  , .Pull, .Speed, .Alternate};
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
+GPIO_InitTypeDef* GPIOxInit(uint32_t pinNum, uint32_t mode, uint32_t pull, uint32_t speed, uint32_t alternate);
 
 int main(void)
 {
   /* MCU Configuration----------------------------------------------------------*/
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-  HAL_Init();
+ 	GPIO_InitTypeDef* GPIO_A = GPIOxInit(GPIO_PIN_1, GPIO_MODE_INPUT, GPIO_PULLDOWN, GPIO_SPEED_FREQ_VERY_HIGH, GPIO_MODE_AF_PP);
+	
+	HAL_Init();
 	
   /* Configure the system clock */
   SystemClock_Config();
 	__HAL_RCC_GPIOA_CLK_ENABLE();
-	HAL_GPIO_Init(GPIOA,);
+	
+	// Initialize GPIO_A Ports
+	HAL_GPIO_Init(GPIOA,GPIO_A);
 	while (1){
-		printf("%d\n",1);
+			GPIOA->BSRR = GPIO_PIN_SET;
 	}
 }
 
@@ -72,6 +76,23 @@ void SystemClock_Config(void){
 
   /* SysTick_IRQn interrupt configuration */
   HAL_NVIC_SetPriority(SysTick_IRQn, 0, 0);
+}
+
+/**
+	* @brief A function to return a configuration structure for a GPIO port
+	*	@retval None
+	*/
+
+GPIO_InitTypeDef* GPIOxInit(uint32_t pinNum, uint32_t mode, uint32_t pull, uint32_t speed, uint32_t alternate){
+	
+	GPIO_InitTypeDef* init;
+	init->Pin = pinNum;
+	init->Mode = mode;
+	init->Pull = pull;
+	init->Speed = speed;
+	init->Alternate = alternate;
+
+	return init;
 }
 
 /**
