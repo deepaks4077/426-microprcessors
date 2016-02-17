@@ -14,6 +14,7 @@
 #include "supporting_functions.h"
 
 /* Private variables ---------------------------------------------------------*/
+GPIO_InitTypeDef* GPIO_A_Init =  {.Pin = GPIO_PIN_All, .Mode =  , .Pull, .Speed, .Alternate};
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
@@ -26,8 +27,10 @@ int main(void)
 	
   /* Configure the system clock */
   SystemClock_Config();
-	
+	__HAL_RCC_GPIOA_CLK_ENABLE();
+	HAL_GPIO_Init(GPIOA,);
 	while (1){
+		printf("%d\n",1);
 	}
 }
 
