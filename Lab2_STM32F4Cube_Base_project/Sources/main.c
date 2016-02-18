@@ -9,23 +9,20 @@
   ******************************************************************************
   */
 	
-/* Includes ------------------------------------------------------------------*/
+/* Includes --------------------------------------------------------------------*/
 #include "stm32f4xx_hal.h"
 #include "supporting_functions.h"
+#include "config.h"
 
-/* Private variables ---------------------------------------------------------*/
-ADC_HandleTypeDef ADC1_Handle;
+/* Private variables -----------------------------------------------------------*/
+extern ADC_HandleTypeDef ADC1_Handle;
 
-
-/* Private function prototypes -----------------------------------------------*/
+/* Private function prototypes -------------------------------------------------*/
 void SystemClock_Config	(void);
-void ADC_config(void);
-ADC_ChannelConfTypeDef ADC_Get_ChannelConfig(void);
 float Convert_Voltage_To_Temperature(uint32_t Voltage);
 
 int main(void)
 {
-	
 	uint32_t Voltage;
 	float Temperature;
 	
@@ -36,10 +33,7 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 	
-	/* Configure the ADC clock --------------------------------------------------*/
-	__ADC1_CLK_ENABLE();
-	
-	/* Configure and start the ADC1 peripheral ---------------------------------------------*/
+	/* Configure and start the ADC1 peripheral (including the clock) -------------*/
 	ADC_config();
 	
 	while (1){
@@ -54,8 +48,7 @@ float Convert_Voltage_To_Temperature(uint32_t Voltage){
 	
 	float Temperature = Voltage * 1.0f;
 	
-	Temperature *= 3000.0f/0xfff;
-	Temperature /= 1000;
+	Temperature *= 3.30f/0xfff;
 	Temperature -= 0.76;
 	Temperature /= 0.025;
 	Temperature += 25.0;
@@ -63,65 +56,7 @@ float Convert_Voltage_To_Temperature(uint32_t Voltage){
 	return Temperature;
 }
 
-
-/** Configure and start ADC1 -------------------------------------------------------------*/
-void ADC_config(void){
-
-	ADC_InitTypeDef* ADC_Init;
-	ADC_ChannelConfTypeDef* ADC1_Channel;
-	
-	ADC1_Handle.Instance = ADC1;
-	ADC1_Handle.NbrOfCurrentConversionRank = 1;
-	ADC1_Handle.State = HAL_ADC_STATE_READY;
-	
-	/* Configure init handler ----------------------------------------------------*/
-	
-	ADC_Init->ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
-	ADC_Init->Resolution = ADC_RESOLUTION12b;
-	ADC_Init->DataAlign = ADC_DATAALIGN_RIGHT;
-	ADC_Init->ScanConvMode = DISABLE;
-	ADC_Init->EOCSelection = ADC_EOC_SINGLE_CONV; // | ADC_EOC_SEQ_CONV | ADC_EOC_SINGLE_SEQ_CONV
-	ADC_Init->ContinuousConvMode = DISABLE;
-	ADC_Init->NbrOfConversion = 1;
-	ADC_Init->ExternalTrigConv = ADC_SOFTWARE_START;
-	ADC_Init->ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-	
-	/* Add the init config handle to the ADC handler ----------------------------*/
-	
-	ADC1_Handle.Init = *ADC_Init;
-	
-	/* Configure the data acquisition channel -----------------------------------*/
-	
-	*ADC1_Channel = ADC_Get_ChannelConfig();
-	
-	HAL_ADC_ConfigChannel(&ADC1_Handle, ADC1_Channel);
-	
-	/* Initialize ADC1 -----------------------------------------------------------*/
-	if(HAL_ADC_Init(&ADC1_Handle) != HAL_OK){
-		Error_Handler(ADC_INIT_FAIL);
-	}
-	
-	/* Start the ADC -------------------------------------------------------------*/
-	HAL_ADC_Start(&ADC1_Handle);
-
-}
-
-/** Configure ADC1 Channel ---------------------------------------------------*/
-ADC_ChannelConfTypeDef ADC_Get_ChannelConfig(){
-	
-	ADC_ChannelConfTypeDef* ADC1_Channel;
-	
-	ADC1_Channel->Channel = ADC_CHANNEL_16; // Grab the Temperature channel
-	ADC1_Channel->Rank = 1;
-	ADC1_Channel->Offset = 0;
-	ADC1_Channel->SamplingTime = ADC_SAMPLETIME_480CYCLES;
-	
-	return *ADC1_Channel;
-}
-
-
-
-/** System Clock Configuration */
+/* System Clock Configuration ------------------------------------------------- */
 void SystemClock_Config(void){
 
   RCC_OscInitTypeDef RCC_OscInitStruct;

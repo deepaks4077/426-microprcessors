@@ -1,7 +1,7 @@
 .\objects\main.o: Sources\main.c
 .\objects\main.o: C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal.h
-.\objects\main.o: C:\Users\dsharm10\426-microprcessors\Lab2_STM32F4Cube_Base_project-retry\RTE\Device\STM32F407VGTx\stm32f4xx_hal_conf.h
-.\objects\main.o: C:\Users\dsharm10\426-microprcessors\Lab2_STM32F4Cube_Base_project-retry\RTE\RTE_Components.h
+.\objects\main.o: C:\Users\dsharm10\426-microprcessors\Lab2_STM32F4Cube_Base_project\RTE\Device\STM32F407VGTx\stm32f4xx_hal_conf.h
+.\objects\main.o: C:\Users\dsharm10\426-microprcessors\Lab2_STM32F4Cube_Base_project\RTE\RTE_Components.h
 .\objects\main.o: C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_rcc.h
 .\objects\main.o: C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_def.h
 .\objects\main.o: C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
@@ -43,3 +43,4 @@
 .\objects\main.o: C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_uart.h
 .\objects\main.o: C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_usart.h
 .\objects\main.o: .\Headers\supporting_functions.h
+.\objects\main.o: .\Headers\config.h
