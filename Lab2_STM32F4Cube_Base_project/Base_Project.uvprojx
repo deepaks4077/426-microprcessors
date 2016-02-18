@@ -10,8 +10,7 @@
       <TargetName>Lab 2</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pArmCC>5050169::V5.05 update 2 (build 169)::.\ARMCC_505u2</pArmCC>
-      <pCCUsed>5050169::V5.05 update 2 (build 169)::.\ARMCC_505u2</pCCUsed>
+      <pArmCC>5050169::V5.05 update 2 (build 169)::ARMCC</pArmCC>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F407VGTx</Device>
@@ -175,10 +174,10 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4096</DriverSelection>
+            <DriverSelection>4103</DriverSelection>
           </Flash1>
-          <bUseTDR>1</bUseTDR>
-          <Flash2>BIN\UL2CM3.DLL</Flash2>
+          <bUseTDR>0</bUseTDR>
+          <Flash2>STLink\ST-LINKIII-KEIL_SWO.dll</Flash2>
           <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
@@ -231,7 +230,6 @@
             <useUlib>1</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
-            <nSecure>0</nSecure>
             <RoSelD>3</RoSelD>
             <RwSelD>3</RwSelD>
             <CodeSel>0</CodeSel>
@@ -368,8 +366,6 @@
             <useXO>0</useXO>
             <v6Lang>0</v6Lang>
             <v6LangP>0</v6LangP>
-            <vShortEn>0</vShortEn>
-            <vShortWch>0</vShortWch>
             <VariousControls>
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER, STM32F407xx ,  __FPU_PRESENT=1 , HSE_VALUE=8000000</Define>
@@ -395,7 +391,7 @@
             </VariousControls>
           </Aads>
           <LDads>
-            <umfTarg>0</umfTarg>
+            <umfTarg>1</umfTarg>
             <Ropi>0</Ropi>
             <Rwpi>0</Rwpi>
             <noStLib>0</noStLib>
@@ -404,7 +400,7 @@
             <TextAddressRange>0x08000000</TextAddressRange>
             <DataAddressRange>0x20000000</DataAddressRange>
             <pXoBase></pXoBase>
-            <ScatterFile></ScatterFile>
+            <ScatterFile>.\Objects\Base_Project.sct</ScatterFile>
             <IncludeLibs></IncludeLibs>
             <IncludeLibsPath></IncludeLibsPath>
             <Misc></Misc>

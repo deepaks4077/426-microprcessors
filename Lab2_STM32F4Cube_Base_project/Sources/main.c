@@ -33,9 +33,10 @@ int main(void)
 	
 	// Initialize GPIO_A Ports
 	HAL_GPIO_Init(GPIOA,GPIO_A);
-	while (1){
-			GPIOA->BSRR = GPIO_PIN_SET;
-	}
+	HAL_GPIO_WritePin(GPIOA,GPIO_PIN_1,GPIO_PIN_SET);
+	//while (1){
+			//GPIOA->BSRR = GPIO_PIN_SET;
+	//}
 }
 
 
