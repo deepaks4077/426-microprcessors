@@ -16,6 +16,9 @@
 
 /* Private variables -----------------------------------------------------------*/
 extern ADC_HandleTypeDef ADC1_Handle;
+extern GPIO_InitTypeDef GPIO_A;
+extern GPIO_InitTypeDef GPIO_E;
+extern GPIO_InitTypeDef GPIO_B;
 
 /* Private function prototypes -------------------------------------------------*/
 void SystemClock_Config	(void);
@@ -36,11 +39,19 @@ int main(void)
 	/* Configure and start the ADC1 peripheral (including the clock) -------------*/
 	ADC_config();
 	
-	while (1){
-		Voltage = HAL_ADC_GetValue(&ADC1_Handle);
-		Temperature = Convert_Voltage_To_Temperature(Voltage);	
-		printf("TEMPERATURE %f <-------------------> VOLTAGE %d\n", Temperature, Voltage);
+	/* Configure the GPIO pins connected to the 7-segment display ----------------*/
+	GPIO_config();
+	
+	while(1){
+		HAL_GPIO_WritePin(GPIOE,GPIO_PIN_15,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_1,GPIO_PIN_SET);
 	}
+	
+	//while (1){
+		//Voltage = HAL_ADC_GetValue(&ADC1_Handle);
+		//Temperature = Convert_Voltage_To_Temperature(Voltage);	
+		//printf("TEMPERATURE %f <-------------------> VOLTAGE %d\n", Temperature, Voltage);
+	//}
 }
 
 /* Convert the Voltage to Temperature ------------------------------------------*/
