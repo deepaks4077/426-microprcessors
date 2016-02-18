@@ -1,0 +1,44 @@
+
+
+
+ARM Macro Assembler    Page 1 
+
+
+    1 00000000                 AREA             text, CODE, READONLY
+    2 00000000                 EXPORT           example1
+    3 00000000         example1
+    4 00000000 F04F 0119       MOV              R1, #25
+    5 00000004 F04F 024B       MOV              R2, #75
+    6 00000008 4411            ADD              R1, R2, R1
+    7 0000000A 4770            BX               LR          ;
+    8 0000000C                 END
+Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
+erwork --depend=.\obj\first_asm.d -o.\obj\first_asm.o -IC:\Users\dsharm10\426\R
+TE -IC:\Keil_v5\ARM\PACK\ARM\CMSIS\4.5.0\CMSIS\Include -IC:\Keil_v5\ARM\PACK\Ke
+il\STM32F4xx_DFP\2.7.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include --predefine="_
+_UVISION_VERSION SETA 515" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx 
+SETA 1" --list=.\listings\first_asm.lst first_asm.s
+
+
+
+ARM Macro Assembler    Page 1 Alphabetic symbol ordering
+Relocatable symbols
+
+example1 00000000
+
+Symbol: example1
+   Definitions
+      At line 3 in file first_asm.s
+   Uses
+      At line 2 in file first_asm.s
+Comment: example1 used once
+text 00000000
+
+Symbol: text
+   Definitions
+      At line 1 in file first_asm.s
+   Uses
+      None
+Comment: text unused
+2 symbols
+336 symbols in table
