@@ -1,4 +1,4 @@
-.\objects\config.o: config.c
+.\objects\config.o: Sources\config.c
 .\objects\config.o: C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal.h
 .\objects\config.o: C:\Users\dsharm10\426-microprcessors\Lab2_STM32F4Cube_Base_project\RTE\Device\STM32F407VGTx\stm32f4xx_hal_conf.h
 .\objects\config.o: C:\Users\dsharm10\426-microprcessors\Lab2_STM32F4Cube_Base_project\RTE\RTE_Components.h
@@ -43,4 +43,4 @@
 .\objects\config.o: C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_uart.h
 .\objects\config.o: C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\STM32F4xx_HAL_Driver\Inc\stm32f4xx_hal_usart.h
 .\objects\config.o: .\Headers\supporting_functions.h
-.\objects\config.o: config.h
+.\objects\config.o: .\Headers\config.h

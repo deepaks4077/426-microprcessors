@@ -28,21 +28,22 @@ Project File Date:  02/18/2016
 *** Using Compiler 'V5.05 update 2 (build 169)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Lab 2'
 compiling main.c...
-Sources\main.c(43): warning:  #223-D: function "GPIO_config" declared implicitly
+Sources\main.c(70): warning:  #223-D: function "GPIO_config" declared implicitly
         GPIO_config();
-Sources\main.c(29): warning:  #177-D: variable "Voltage" was declared but never referenced
-        uint32_t Voltage;
-Sources\main.c(30): warning:  #177-D: variable "Temperature" was declared but never referenced
-        float Temperature;
-Sources\main.c(63): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+Sources\main.c(49): warning:  #177-D: variable "digit" was declared but never referenced
+        int digit;
+Sources\main.c(50): warning:  #177-D: variable "pos" was declared but never referenced
+        int pos;
+Sources\main.c(232): warning:  #1035-D: single-precision operand implicitly converted to double-precision
         Temperature -= 0.76;
-Sources\main.c(64): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+Sources\main.c(233): warning:  #1035-D: single-precision operand implicitly converted to double-precision
         Temperature /= 0.025;
-Sources\main.c(65): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+Sources\main.c(234): warning:  #1035-D: single-precision operand implicitly converted to double-precision
         Temperature += 25.0;
 Sources\main.c: 6 warnings, 0 errors
+compiling config.c...
 linking...
-Program Size: Code=5356 RO-data=440 RW-data=12 ZI-data=1156  
+Program Size: Code=10252 RO-data=440 RW-data=12 ZI-data=1132  
 FromELF: creating hex file...
 ".\Objects\Base_Project.axf" - 0 Error(s), 6 Warning(s).
 

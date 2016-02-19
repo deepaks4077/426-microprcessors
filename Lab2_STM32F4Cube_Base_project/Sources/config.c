@@ -2,25 +2,23 @@
 #include "supporting_functions.h"
 #include "config.h"
 
+#define DECIMAL 									 ((uint16_t)0x0400)
+#define SEG_A											 ((uint16_t)0x0080)
+#define SEG_B	 		      	         ((uint16_t)0x0100)  
+#define SEG_C     			           ((uint16_t)0x0200)  
+#define SEG_D                			 ((uint16_t)0x0400)  
+#define SEG_E             			   ((uint16_t)0x0800)  
+#define SEG_F       			         ((uint16_t)0x1000)  
+#define SEG_G 			               ((uint16_t)0x2000)
+#define CTRL_1                		 ((uint16_t)0x0100)  
+#define CTRL_2             			   ((uint16_t)0x0200)  
+#define CTRL_3       			         ((uint16_t)0x0400)  
+#define CTRL_4 			               ((uint16_t)0x0800)
+
+
 ADC_HandleTypeDef ADC1_Handle;
-GPIO_InitTypeDef GPIO_A;
+GPIO_InitTypeDef GPIO_D;
 GPIO_InitTypeDef GPIO_E;
-GPIO_InitTypeDef GPIO_B;
-
-GPIO_InitTypeDef* GPIOxInit(uint32_t pinNum, uint32_t mode, uint32_t pull, uint32_t speed, uint32_t alternate);
-
-/** Initialize configuration for a GPIO Port ---------------------------------------------*/
-GPIO_InitTypeDef* GPIOxInit(uint32_t pinNum, uint32_t mode, uint32_t pull, uint32_t speed, uint32_t alternate){
-	
-	GPIO_InitTypeDef* init;
-	init->Pin = pinNum;
-	init->Mode = mode;
-	init->Pull = pull;
-	init->Speed = speed;
-	init->Alternate = alternate;
-
-	return init;
-}
 
 /** Configure and start ADC1 -------------------------------------------------------------*/
 void ADC_config(void){
@@ -68,31 +66,21 @@ void ADC_config(void){
 
 void GPIO_config(void){
 	
-	__HAL_RCC_GPIOA_CLK_ENABLE();
-	__HAL_RCC_GPIOE_CLK_ENABLE();
-	__HAL_RCC_GPIOB_CLK_ENABLE();
-	
-	//GPIO_InitTypeDef* GPIO_A = GPIOxInit(GPIO_PIN_1, GPIO_MODE_OUTPUT_PP, GPIO_PULLDOWN, GPIO_SPEED_FREQ_VERY_HIGH, GPIO_AF1_TIM1);
-	//GPIO_InitTypeDef* GPIO_E = GPIOxInit(GPIO_PIN_15, GPIO_MODE_OUTPUT_PP, GPIO_PULLDOWN, GPIO_SPEED_FREQ_VERY_HIGH, GPIO_AF1_TIM1);
+	GPIO_D.Pin = CTRL_1 | CTRL_2 | CTRL_3 | CTRL_4 | GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
+	GPIO_D.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_D.Pull = GPIO_PULLUP;
+	GPIO_D.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 
-	GPIO_A.Pin = GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_7;
-	GPIO_A.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_A.Pull = GPIO_PULLDOWN;
-	GPIO_A.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-
-	GPIO_E.Pin = GPIO_PIN_7 | GPIO_PIN_9 | GPIO_PIN_11 | GPIO_PIN_13 | GPIO_PIN_15;
+	GPIO_E.Pin = SEG_A | SEG_B | SEG_C | SEG_D | SEG_E | SEG_F | SEG_G;
 	GPIO_E.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_E.Pull = GPIO_PULLDOWN;
+	GPIO_E.Pull = GPIO_PULLUP;
 	GPIO_E.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 	
-	GPIO_B.Pin = GPIO_PIN_11 | GPIO_PIN_13 | GPIO_PIN_15;
-	GPIO_B.Mode = GPIO_MODE_OUTPUT_PP;
-	GPIO_B.Pull = GPIO_PULLDOWN;
-	GPIO_B.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+	__HAL_RCC_GPIOE_CLK_ENABLE();
 	
-	HAL_GPIO_Init(GPIOA,&GPIO_A);
+	HAL_GPIO_Init(GPIOD,&GPIO_D);
 	HAL_GPIO_Init(GPIOE,&GPIO_E);
-	HAL_GPIO_Init(GPIOB,&GPIO_B);
 }
 
 

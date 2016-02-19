@@ -14,6 +14,21 @@
 #include "supporting_functions.h"
 #include "config.h"
 
+
+#define DECIMAL 									 ((uint16_t)0x4000)
+#define SEG_A											 ((uint16_t)0x0080)
+#define SEG_B	 		      	         ((uint16_t)0x0100)  
+#define SEG_C     			           ((uint16_t)0x0200)  
+#define SEG_D                			 ((uint16_t)0x0400)  
+#define SEG_E             			   ((uint16_t)0x0800)  
+#define SEG_F       			         ((uint16_t)0x1000)  
+#define SEG_G 			               ((uint16_t)0x2000)
+#define CTRL_1                		 ((uint16_t)0x0100)  
+#define CTRL_2             			   ((uint16_t)0x0200)  
+#define CTRL_3       			         ((uint16_t)0x0400)  
+#define CTRL_4 			               ((uint16_t)0x0800)
+#define DECIMAL_PT								 								-1
+
 /* Private variables -----------------------------------------------------------*/
 extern ADC_HandleTypeDef ADC1_Handle;
 extern GPIO_InitTypeDef GPIO_A;
@@ -23,11 +38,23 @@ extern GPIO_InitTypeDef GPIO_B;
 /* Private function prototypes -------------------------------------------------*/
 void SystemClock_Config	(void);
 float Convert_Voltage_To_Temperature(uint32_t Voltage);
+void Display_Digit_At_Pos(int pos, int digit);
+void Reset_Display(void);
+int Get_Digit_In_Place(float number, int place);
 
 int main(void)
 {
 	uint32_t Voltage;
 	float Temperature;
+	int digit;
+	int pos;
+	int UPDATE_FLAG;
+	int upd_ctr;
+	int first_digit;
+	int second_digit;
+	int third_digit;
+	int delay_btw_digits = 3;
+	
 	
 	/* MCU Configuration----------------------------------------------------------*/
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
@@ -42,16 +69,162 @@ int main(void)
 	/* Configure the GPIO pins connected to the 7-segment display ----------------*/
 	GPIO_config();
 	
+	UPDATE_FLAG = 1000/delay_btw_digits;
+	upd_ctr = 0;
+	
 	while(1){
-		HAL_GPIO_WritePin(GPIOE,GPIO_PIN_15,GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOA,GPIO_PIN_1,GPIO_PIN_SET);
+		Voltage = HAL_ADC_GetValue(&ADC1_Handle);
+		Temperature = Convert_Voltage_To_Temperature(Voltage);
+		
+		printf("Temperature = %f \n", Temperature);
+		first_digit = Get_Digit_In_Place(Temperature,1);
+		second_digit = Get_Digit_In_Place(Temperature,10);
+		third_digit = Get_Digit_In_Place(Temperature, 100);
+		upd_ctr = 0;
+		
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_13,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_14,GPIO_PIN_SET);
+		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_15,GPIO_PIN_SET);
+		
+		printf("%d %d %d \n", first_digit, second_digit, third_digit);
+		while(upd_ctr < UPDATE_FLAG){
+			Display_Digit_At_Pos(1,third_digit);
+			HAL_Delay(2);
+			Reset_Display();
+			
+			Display_Digit_At_Pos(2,second_digit);
+			Display_Digit_At_Pos(2,DECIMAL_PT);
+			HAL_Delay(2);
+			Reset_Display();
+			
+			Display_Digit_At_Pos(3,first_digit);
+			HAL_Delay(2);
+			Reset_Display();
+			
+			if(Temperature > 40){
+				
+			}
+			
+			upd_ctr++;
+		}
+	}
+}
+
+
+int Get_Digit_In_Place(float number, int place)
+{
+	int digit = (int) (number * 10);
+	digit = (int) (digit/place) % 10;
+	return digit;
+}
+
+void Display_Digit_At_Pos(int pos, int digit){
+
+	switch(pos){
+		case 1:
+			HAL_GPIO_WritePin(GPIOD,CTRL_1,GPIO_PIN_SET);
+			break;
+		case 2:
+			HAL_GPIO_WritePin(GPIOD,CTRL_2,GPIO_PIN_SET);
+			break;
+		case 3:
+			HAL_GPIO_WritePin(GPIOD,CTRL_3,GPIO_PIN_SET);
+			break;
+		case 4:
+			HAL_GPIO_WritePin(GPIOD,CTRL_4,GPIO_PIN_SET);
+			break;
 	}
 	
-	//while (1){
-		//Voltage = HAL_ADC_GetValue(&ADC1_Handle);
-		//Temperature = Convert_Voltage_To_Temperature(Voltage);	
-		//printf("TEMPERATURE %f <-------------------> VOLTAGE %d\n", Temperature, Voltage);
-	//}
+	switch(digit){
+		case DECIMAL_PT:
+			HAL_GPIO_WritePin(GPIOE,DECIMAL,GPIO_PIN_SET);
+			break;
+		case 1:
+			HAL_GPIO_WritePin(GPIOE,SEG_B,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_C,GPIO_PIN_SET);
+			break;
+		case 2:
+			HAL_GPIO_WritePin(GPIOE,SEG_A,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_B,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_G,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_E,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_D,GPIO_PIN_SET);
+			break;
+		case 3:
+			HAL_GPIO_WritePin(GPIOE,SEG_A,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_B,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_G,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_C,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_D,GPIO_PIN_SET);
+			break;
+		case 4:
+			HAL_GPIO_WritePin(GPIOE,SEG_F,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_G,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_B,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_C,GPIO_PIN_SET);
+			break;
+		case 5:
+			HAL_GPIO_WritePin(GPIOE,SEG_A,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_F,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_G,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_C,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_D,GPIO_PIN_SET);
+			break;
+		case 6:
+			HAL_GPIO_WritePin(GPIOE,SEG_A,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_F,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_G,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_C,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_D,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_E,GPIO_PIN_SET);
+			break;
+		case 7:
+			HAL_GPIO_WritePin(GPIOE,SEG_B,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_C,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_A,GPIO_PIN_SET);
+			break;
+		case 8:
+			HAL_GPIO_WritePin(GPIOE,SEG_A,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_B,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_C,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_D,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_E,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_F,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_G,GPIO_PIN_SET);
+			break;
+		case 9:
+			HAL_GPIO_WritePin(GPIOE,SEG_A,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_B,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_C,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_F,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_G,GPIO_PIN_SET);
+			break;
+		case 0:
+			HAL_GPIO_WritePin(GPIOE,SEG_A,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_B,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_C,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_D,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_E,GPIO_PIN_SET);
+			HAL_GPIO_WritePin(GPIOE,SEG_F,GPIO_PIN_SET);
+			break;
+	}
+}
+
+void Reset_Display(void){
+	// RESEST ALL DIGITS AND CONTROLS
+		HAL_GPIO_WritePin(GPIOE,DECIMAL,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOE,SEG_A,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOE,SEG_B,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOE,SEG_C,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOE,SEG_D,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOE,SEG_E,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOE,SEG_F,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOE,SEG_G,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD,CTRL_1,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD,CTRL_2,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD,CTRL_3,GPIO_PIN_RESET);
+		HAL_GPIO_WritePin(GPIOD,CTRL_4,GPIO_PIN_RESET);
 }
 
 /* Convert the Voltage to Temperature ------------------------------------------*/
