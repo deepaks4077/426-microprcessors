@@ -27,13 +27,30 @@
 #define CTRL_2             			   ((uint16_t)0x0200)  
 #define CTRL_3       			         ((uint16_t)0x0400)  
 #define CTRL_4 			               ((uint16_t)0x0800)
+#define GREEN_LED									 ((uint16_t)0x1000)
+#define ORANGE_LED								 ((uint16_t)0x2000)
+#define RED_LED										 ((uint16_t)0x4000)
+#define BLUE_LED								   ((uint16_t)0x8000)
 #define DECIMAL_PT								 								-1
+#define ALARM_THRESHOLD														31
+#define UPDATE_TEMPERATURE										 	  10					
 
 /* Private variables -----------------------------------------------------------*/
 extern ADC_HandleTypeDef ADC1_Handle;
 extern GPIO_InitTypeDef GPIO_A;
 extern GPIO_InitTypeDef GPIO_E;
 extern GPIO_InitTypeDef GPIO_B;
+int UPDATE_FLAG;
+int LED_CTR;
+int UPDATE_ALARM;
+typedef struct kalman_state{
+	float q;
+	float r;
+	float x;
+	float p;
+	float k;
+}kalman_state;
+
 
 /* Private function prototypes -------------------------------------------------*/
 void SystemClock_Config	(void);
@@ -41,6 +58,13 @@ float Convert_Voltage_To_Temperature(uint32_t Voltage);
 void Display_Digit_At_Pos(int pos, int digit);
 void Reset_Display(void);
 int Get_Digit_In_Place(float number, int place);
+void Raise_The_Alarm(uint32_t led_ctr);
+void Light_Orange_Led(void);
+void Light_Green_Led(void);
+void Light_Blue_Led(void);
+void Light_Red_Led(void);
+void RESET_ALL_LEDS(void);
+void Kalmanfilter(float Input,kalman_state* kstate);
 
 int main(void)
 {
@@ -48,13 +72,21 @@ int main(void)
 	float Temperature;
 	int digit;
 	int pos;
-	int UPDATE_FLAG;
 	int upd_ctr;
 	int first_digit;
 	int second_digit;
 	int third_digit;
-	int delay_btw_digits = 3;
+	int alarm_ctr = 0;
+	int delay_btw_digits = 2;
+	kalman_state kstate;
+	FILE *ofp;
+	char *mode = "rw+";
 	
+	kstate.q =	0.1;
+	kstate.r =	0.1;	
+	kstate.x =	0.0;
+	kstate.p =	0.1;
+	kstate.k =	0.0;
 	
 	/* MCU Configuration----------------------------------------------------------*/
   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
@@ -69,48 +101,105 @@ int main(void)
 	/* Configure the GPIO pins connected to the 7-segment display ----------------*/
 	GPIO_config();
 	
-	UPDATE_FLAG = 1000/delay_btw_digits;
-	upd_ctr = 0;
+	UPDATE_FLAG = 1000;
+	LED_CTR = 0;
 	
+	UPDATE_ALARM = UPDATE_TEMPERATURE/4;
+	alarm_ctr = 0;
+	
+	ofp = fopen("analyze.txt", mode);
+
 	while(1){
 		Voltage = HAL_ADC_GetValue(&ADC1_Handle);
 		Temperature = Convert_Voltage_To_Temperature(Voltage);
+		Kalmanfilter(Temperature,&kstate);
 		
-		printf("Temperature = %f \n", Temperature);
+		//printf("Temperature = %f <---------> Kalman = %f\n", Temperature, kstate.x);
+		fprintf(ofp,"%f,%f\n",Temperature,kstate.x);
+		
 		first_digit = Get_Digit_In_Place(Temperature,1);
 		second_digit = Get_Digit_In_Place(Temperature,10);
 		third_digit = Get_Digit_In_Place(Temperature, 100);
-		upd_ctr = 0;
 		
-		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_12,GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_13,GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_14,GPIO_PIN_SET);
-		HAL_GPIO_WritePin(GPIOD,GPIO_PIN_15,GPIO_PIN_SET);
+		//printf("%d %d %d \n", first_digit, second_digit, third_digit);
 		
-		printf("%d %d %d \n", first_digit, second_digit, third_digit);
-		while(upd_ctr < UPDATE_FLAG){
-			Display_Digit_At_Pos(1,third_digit);
-			HAL_Delay(2);
-			Reset_Display();
+		if(Temperature > ALARM_THRESHOLD){
+			UPDATE_ALARM = UPDATE_TEMPERATURE/4;
+		}else{
+			UPDATE_ALARM = 0;
+		}
+		
+		LED_CTR = 0;
+		alarm_ctr = 0;
+		while(LED_CTR < UPDATE_TEMPERATURE){
 			
-			Display_Digit_At_Pos(2,second_digit);
-			Display_Digit_At_Pos(2,DECIMAL_PT);
-			HAL_Delay(2);
-			Reset_Display();
-			
-			Display_Digit_At_Pos(3,first_digit);
-			HAL_Delay(2);
-			Reset_Display();
-			
-			if(Temperature > 40){
-				
+			if(LED_CTR%3 == 0){
+				Reset_Display();
+				Display_Digit_At_Pos(1,third_digit);
+			}else if(LED_CTR%3 == 1){
+				Reset_Display();
+				Display_Digit_At_Pos(2,second_digit);
+				Display_Digit_At_Pos(2,DECIMAL_PT);
+			}else if(LED_CTR%3 == 2){
+				Reset_Display();
+				Display_Digit_At_Pos(3,first_digit);
+			}
+						
+			if(UPDATE_ALARM){
+				Raise_The_Alarm(LED_CTR);
 			}
 			
-			upd_ctr++;
+			alarm_ctr++;
 		}
+		
+		RESET_ALL_LEDS();
 	}
 }
 
+void Kalmanfilter(float Input, kalman_state* kstate){
+	kstate->p = kstate->p + kstate->q;
+	kstate->k = kstate->p / (kstate->p + kstate->r);
+	kstate->x = kstate->x + (kstate->k)*(Input - kstate->x);
+	kstate->p = kstate->p - kstate->p * (kstate->k);
+}
+
+void RESET_ALL_LEDS(void){
+	HAL_GPIO_WritePin(GPIOD,ORANGE_LED,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD,GREEN_LED,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD,BLUE_LED,GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(GPIOD,RED_LED,GPIO_PIN_RESET);
+}
+
+void Light_Orange_Led(void){
+	HAL_GPIO_WritePin(GPIOD,ORANGE_LED,GPIO_PIN_SET);
+}
+void Light_Green_Led(void){
+	HAL_GPIO_WritePin(GPIOD,GREEN_LED,GPIO_PIN_SET);
+}
+void Light_Blue_Led(void){
+	HAL_GPIO_WritePin(GPIOD,BLUE_LED,GPIO_PIN_SET);
+}
+void Light_Red_Led(void){
+	HAL_GPIO_WritePin(GPIOD,RED_LED,GPIO_PIN_SET);
+}
+
+
+void Raise_The_Alarm(uint32_t led_ctr){
+				
+		if(led_ctr == 0){
+			RESET_ALL_LEDS();
+			Light_Orange_Led();
+		}else if(led_ctr == UPDATE_ALARM){
+			RESET_ALL_LEDS();
+			Light_Green_Led();
+		}else if(led_ctr == UPDATE_ALARM*2){
+			RESET_ALL_LEDS();
+			Light_Blue_Led();
+		}else if(led_ctr == UPDATE_ALARM*3){
+			RESET_ALL_LEDS();
+			Light_Red_Led();
+		}
+}
 
 int Get_Digit_In_Place(float number, int place)
 {
@@ -212,7 +301,7 @@ void Display_Digit_At_Pos(int pos, int digit){
 }
 
 void Reset_Display(void){
-	// RESEST ALL DIGITS AND CONTROLS
+	// RESET ALL DIGITS AND CONTROLS
 		HAL_GPIO_WritePin(GPIOE,DECIMAL,GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOE,SEG_A,GPIO_PIN_RESET);
 		HAL_GPIO_WritePin(GPIOE,SEG_B,GPIO_PIN_RESET);

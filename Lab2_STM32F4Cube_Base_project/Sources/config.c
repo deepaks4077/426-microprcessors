@@ -30,7 +30,7 @@ void ADC_config(void){
 	ADC1_Handle.State = HAL_ADC_STATE_READY;
 	
 	/* Configure init handler ----------------------------------------------------*/
-	ADC1_Handle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
+	ADC1_Handle.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
 	ADC1_Handle.Init.Resolution = ADC_RESOLUTION_12B;
 	ADC1_Handle.Init.DataAlign = ADC_DATAALIGN_RIGHT;
 	ADC1_Handle.Init.ScanConvMode = DISABLE;

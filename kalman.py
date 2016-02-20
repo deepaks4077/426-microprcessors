@@ -1,8 +1,8 @@
-class KalmaFilter(object):
-	q = 0.0
-	r = 0.0
+class KalmanFilter(object):
+	q = 0.1
+	r = 0.1
 	x = 0.0
-	p = 0.0
+	p = 0.1
 	k = 0.0
 	
 	def __init__(self, q, r, p=0.0, k=0.0, initial_value=0.0):
@@ -19,3 +19,5 @@ class KalmaFilter(object):
 		
 		return self.x
 		
+
+kalman = KalmanFilter()
