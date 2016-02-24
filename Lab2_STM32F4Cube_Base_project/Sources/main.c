@@ -1,11 +1,11 @@
 /**
   ******************************************************************************
-  * File Name          : main.c
-  * Description        : A program which showcases ADC and TIM3 under the new firmware
-	                       The ADC
-	* Author						 : Ashraf Suyyagh
-	* Version            : 1.0.0
-	* Date							 : January 14th, 2016
+  * File Name          	: main.c
+  * Description        	: A program to diplsay temperature readings read from a 
+  						 STMF324xx board on a 7-segment display
+	* Author			: Deepak Sharma
+	* Version           : 1.0.0
+	* Date				: February 19th, 2016
   ******************************************************************************
   */
 	
@@ -13,7 +13,6 @@
 #include "stm32f4xx_hal.h"
 #include "supporting_functions.h"
 #include "config.h"
-
 
 #define DECIMAL 									 ((uint16_t)0x4000)
 #define SEG_A											 ((uint16_t)0x0080)
@@ -70,14 +69,10 @@ int main(void)
 {
 	uint32_t Voltage;
 	float Temperature;
-	int digit;
-	int pos;
-	int upd_ctr;
 	int first_digit;
 	int second_digit;
 	int third_digit;
 	int alarm_ctr = 0;
-	int delay_btw_digits = 2;
 	kalman_state kstate;
 	FILE *ofp;
 	char *mode = "rw+";
@@ -88,8 +83,8 @@ int main(void)
 	kstate.p =	0.1;
 	kstate.k =	0.0;
 	
-	/* MCU Configuration----------------------------------------------------------*/
-  /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+  /* MCU Configuration----------------------------------------------------------*/
+ 	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
   HAL_Init();
 	
   /* Configure the system clock */
@@ -101,27 +96,23 @@ int main(void)
 	/* Configure the GPIO pins connected to the 7-segment display ----------------*/
 	GPIO_config();
 	
-	UPDATE_FLAG = 1000;
-	LED_CTR = 0;
+	/* Variables which control the state of the display and alarm ----------------*/
 	
+	/* LED_CTR is updated every millisecond  by the SysTick handler --------------*/
+	LED_CTR = 0;
+
+	/* Used to activate the alarm ------------------------------------------------*/ 
 	UPDATE_ALARM = UPDATE_TEMPERATURE/4;
 	alarm_ctr = 0;
 	
-	ofp = fopen("analyze.txt", mode);
-
 	while(1){
 		Voltage = HAL_ADC_GetValue(&ADC1_Handle);
 		Temperature = Convert_Voltage_To_Temperature(Voltage);
 		Kalmanfilter(Temperature,&kstate);
 		
-		//printf("Temperature = %f <---------> Kalman = %f\n", Temperature, kstate.x);
-		fprintf(ofp,"%f,%f\n",Temperature,kstate.x);
-		
 		first_digit = Get_Digit_In_Place(Temperature,1);
 		second_digit = Get_Digit_In_Place(Temperature,10);
 		third_digit = Get_Digit_In_Place(Temperature, 100);
-		
-		//printf("%d %d %d \n", first_digit, second_digit, third_digit);
 		
 		if(Temperature > ALARM_THRESHOLD){
 			UPDATE_ALARM = UPDATE_TEMPERATURE/4;
