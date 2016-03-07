@@ -20,6 +20,8 @@ void SystemClock_Config	(void);
 
 int main(void)
 {	
+	
+	float* outputArray;
   /* MCU Configuration----------------------------------------------------------*/
 
   HAL_Init();
@@ -27,9 +29,11 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 	
+	configure();
   /* Initialize all configured peripherals */
-
 	while (1){
+		LIS3DSH_ReadACC(outputArray);
+		printFloatArray(outputArray);
 	}
 }
 

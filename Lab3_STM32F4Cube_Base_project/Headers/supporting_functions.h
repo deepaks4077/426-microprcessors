@@ -25,5 +25,6 @@
 #define EXTI_SPI1_FAIL				((uint16_t) 5)
 
 void Error_Handler						(uint16_t error_code);
+void printFloatArray					(float* array);
 
 #endif

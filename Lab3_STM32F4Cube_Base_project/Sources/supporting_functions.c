@@ -50,3 +50,13 @@ void Error_Handler			(uint16_t error_code){
 		break;
 	}
 }
+
+void printFloatArray(float* array){
+	int idx = 0;
+	while(array[idx] != '\n'){
+		printf("%f, ",array[idx]);
+		idx++;
+	}
+	
+	printf("\n");
+}
