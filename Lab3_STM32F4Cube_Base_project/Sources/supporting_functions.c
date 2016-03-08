@@ -53,7 +53,7 @@ void Error_Handler			(uint16_t error_code){
 
 void printFloatArray(float* array){
 	int idx = 0;
-	while(array[idx] != '\n'){
+	while(idx <= 2){
 		printf("%f, ",array[idx]);
 		idx++;
 	}

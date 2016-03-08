@@ -6,6 +6,6 @@
 #include "lis3dsh.h"
 
 LIS3DSH_InitTypeDef *LIS3DSH_InitStruct;
-void config(void);
+void configure(void);
 
 #endif
