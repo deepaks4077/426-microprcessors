@@ -17,24 +17,27 @@
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 int main(void)
 {	
 	
   /* MCU Configuration----------------------------------------------------------*/
-
   HAL_Init();
 
   /* Configure the system clock */
   SystemClock_Config();
 	
+	/* Initialize all configured peripherals */
 	configure();
-  /* Initialize all configured peripherals */
 	while (1){
-		float* outputArray;
-		LIS3DSH_ReadACC(outputArray);
-		printFloatArray(outputArray);
 	}
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	float* outputArray;
+	LIS3DSH_ReadACC(outputArray);
+	printFloatArray(outputArray);
 }
 
 /** System Clock Configuration*/
