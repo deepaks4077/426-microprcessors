@@ -12,16 +12,16 @@
 #include "stm32f4xx_hal.h"
 #include "supporting_functions.h"
 #include "lis3dsh.h"
+#include "stm32f4xx_hal_gpio.h"
 
 /* Private variables ---------------------------------------------------------*/
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+void configure(void);
 
 int main(void)
 {	
-	
   /* MCU Configuration----------------------------------------------------------*/
   HAL_Init();
 
@@ -30,14 +30,20 @@ int main(void)
 	
 	/* Initialize all configured peripherals */
 	configure();
+	printf("* Configured * \n");
+	
 	while (1){
+		//HAL_Delay(100);
 	}
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	float* outputArray;
-	LIS3DSH_ReadACC(outputArray);
-	printFloatArray(outputArray);
+	float output[3];
+	__IO uint32_t tmpreg = 0x00;
+  UNUSED(tmpreg); 
+	
+	LIS3DSH_ReadACC(output);
+	printFloatArray(output,3);
 }
 
 /** System Clock Configuration*/

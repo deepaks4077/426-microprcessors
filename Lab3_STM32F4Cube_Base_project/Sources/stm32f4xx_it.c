@@ -158,10 +158,6 @@ void SysTick_Handler(void)
 	HAL_IncTick();
 }
 
-void EXTI0_IRQHandler(void){
-	HAL_GPIO_EXTI_IRQHandler(GPIOE);
-}
-
 /******************************************************************************/
 /*                 STM32F4xx Peripherals Interrupt Handlers                   */
 /*  Add here the Interrupt Handler for the used peripheral(s) (PPP), for the  */
@@ -173,6 +169,12 @@ void EXTI0_IRQHandler(void){
   * @param  None
   * @retval None
   */
+
+void EXTI0_IRQHandler(void)
+{
+	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
+}
+
 /*void PPP_IRQHandler(void)
 {
 }*/

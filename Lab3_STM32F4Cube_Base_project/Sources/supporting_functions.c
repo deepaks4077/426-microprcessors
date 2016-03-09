@@ -51,9 +51,9 @@ void Error_Handler			(uint16_t error_code){
 	}
 }
 
-void printFloatArray(float* array){
+void printFloatArray(float* array, int Length){
 	int idx = 0;
-	while(idx <= 2){
+	while(idx < Length){
 		printf("%f, ",array[idx]);
 		idx++;
 	}

@@ -5,7 +5,7 @@
 #include "supporting_functions.h"
 #include "lis3dsh.h"
 
-LIS3DSH_InitTypeDef *LIS3DSH_InitStruct;
+LIS3DSH_InitTypeDef LIS3DSH_InitStruct;
 void configure(void);
 
 #endif
