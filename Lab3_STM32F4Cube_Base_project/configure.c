@@ -80,25 +80,13 @@ void GPIO_config(void){
 
 void TimerTim(void)
 {
-	TIM_Base_InitTypeDef TIM_TimeBaseStructure;
+	TIM_Base_InitTypeDef TIM_Time;
 	
-	TIM_TimeBaseStructure.Period = 1;
-	TIM_TimeBaseStructure.Prescaler = 1;
-	TIM_TimeBaseStructure.ClockDivision = TIM_CLOCKDIVISION_DIV4;
-	TIM_TimeBaseStructure.CounterMode = TIM_COUNTERMODE_UP;
-	TIM_Handle.Instance = TIM2;
-	TIM_Handle.Init = TIM_TimeBaseStructure;
-	TIM_Handle.Channel = HAL_TIM_ACTIVE_CHANNEL_CLEARED;
-	TIM_Handle.Lock = HAL_UNLOCKED;
-	TIM_Handle.State = HAL_TIM_STATE_READY;
-
-	HAL_TIM_Base_MspInit(&TIM_Handle);
-	__TIM2_CLK_ENABLE();
+	TIM_Time.Period = 0x0000;
+	TIM_Time.CounterMode = TIM_COUNTERMODE_UP;
+	TIM_Time.Prescaler = 0x0000;
+	TIM_Time.ClockDivision = TIM_CLOCKDIVISION_DIV4;
+	TIM_Time.RepetitionCounter = 0x00;
 	
-	HAL_TIM_Base_Init(&TIM_Handle);
-	HAL_TIM_Base_Start_IT(&TIM_Handle);
-
-	HAL_NVIC_EnableIRQ(TIM2_IRQn);
-	HAL_NVIC_SetPriority(TIM2_IRQn, 9,9);
 
 }
