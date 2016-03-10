@@ -7,5 +7,6 @@
 
 LIS3DSH_InitTypeDef LIS3DSH_InitStruct;
 void configure(void);
-
+void GPIO_config(void);
+void TimerTim(void);
 #endif
