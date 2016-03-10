@@ -59,7 +59,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	printFloatArray(getNormalized(multiplyMatrix(output)),3);
 	
 	if((goal<300) && input == 0){
-		if (GPIO_Pin == GPIO_PIN_6){
+		if (GPIO_PIN_6){
 			columns();
 			
 			if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) == 0){
@@ -76,7 +76,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 			}
 			rows();
 		}	
-		else if (GPIO_Pin == GPIO_PIN_7){
+		else if (GPIO_PIN_7){
 			columns();
 			
 			if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) == 0){
@@ -93,7 +93,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 			}
 			rows();
 		}	
-		else if (GPIO_Pin == GPIO_PIN_8){
+		else if (GPIO_PIN_8){
 			columns();
 			
 			if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) == 0){
@@ -110,7 +110,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 			}
 			rows();
 		}	
-		else if (GPIO_Pin == GPIO_PIN_9){
+		else if (GPIO_PIN_9){
 			columns();
 			
 			if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) == 0){

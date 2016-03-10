@@ -32,7 +32,7 @@ void rows(void){
 	HAL_GPIO_Init(GPIOD ,&Columns);
 	
 	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
-	HAL_NVIC_SetPriority(EXTI9_5_IRQn ,1,2);
+	HAL_NVIC_SetPriority(EXTI9_5_IRQn ,1,1);
 	HAL_NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
 	
 	
