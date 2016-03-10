@@ -2,10 +2,12 @@
 #include "stm32f4xx_hal_tim.h"
 #include "stm32f4xx_hal.h"
 #include "supporting_functions.h"
+#include "stm32f4xx_hal_gpio.h"
 
 ADC_HandleTypeDef ADC1_Handle;
 GPIO_InitTypeDef GPIO_D;
 GPIO_InitTypeDef GPIO_E;
+TIM_HandleTypeDef TIM_type;
 
 void configLISD3SH(void);
 void configTimer(void);
@@ -82,11 +84,28 @@ void TimerTim(void)
 {
 	TIM_Base_InitTypeDef TIM_Time;
 	
-	TIM_Time.Period = 0x0000;
+	TIM_Time.Period = 1;
 	TIM_Time.CounterMode = TIM_COUNTERMODE_UP;
-	TIM_Time.Prescaler = 0x0000;
+	TIM_Time.Prescaler = 1;
 	TIM_Time.ClockDivision = TIM_CLOCKDIVISION_DIV4;
-	TIM_Time.RepetitionCounter = 0x00;
+	TIM_Time.RepetitionCounter = 0;
 	
+	//initiate TIM3 
+	TIM_type.Instance = TIM3;
+	TIM_type.Init = TIM_Time; 
+	TIM_type.Channel = HAL_TIM_ACTIVE_CHANNEL_CLEARED;
+	TIM_type.Lock = HAL_UNLOCKED;
+	TIM_type.State = HAL_TIM_STATE_READY;
+	
+	//Starting the clock 
+	HAL_TIM_Base_MspInit(&TIM_type); 
+	__TIM3_CLK_ENABLE(); 
+	
+	HAL_TIM_Base_Init(&TIM_type);	
+	HAL_TIM_Base_Start_IT(&TIM_type);
+	
+	//Starting the interrupts
+	HAL_NVIC_EnableIRQ(TIM3_IRQn);
+	HAL_NVIC_SetPriority(TIM3_IRQn, 9, 9);
 
 }
