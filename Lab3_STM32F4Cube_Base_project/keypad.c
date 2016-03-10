@@ -19,7 +19,8 @@ void rows(void){
 	
 	__HAL_RCC_GPIOC_CLK_ENABLE();
 	Rows.Pin = GPIO_PIN_9 | GPIO_PIN_8 | GPIO_PIN_7 | GPIO_PIN_6;
-	Rows.Mode = GPIO_MODE_IT_FALLING;
+	Rows.Mode = GPIO_MODE_IT_FALLING;  														//the interrupt line where the row is detected first, since the initial but is 1 
+																																//we have to look for a falling edge that occurrs when a button is pressed  
 	Rows.Pull = GPIO_PULLUP;
 	Rows.Speed = GPIO_SPEED_LOW;
 	HAL_GPIO_Init(GPIOC ,&Rows);

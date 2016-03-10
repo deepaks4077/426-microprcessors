@@ -57,10 +57,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	//output = multiplyMatrix(output);
 	//output = getNormalized(output);
 	printFloatArray(getNormalized(multiplyMatrix(output)),3);
+
 	
+	// need to initiat with interrupt so that we know when a button is pressed 
 	if((goal<300) && input == 0){
-		if (GPIO_PIN_6){
-			columns();
+		if (GPIO_PIN_6){                //so if user presses button on first row check which column button was on 
+			columns();										//getting the column bit
 			
 			if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) == 0){
 				printf("1");
@@ -74,7 +76,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 				printf("3");
 				goal = 3 + (goal*10)
 			}
-			rows();
+			rows();												//reset to original so that next button can be pressed 
 		}	
 		else if (GPIO_PIN_7){
 			columns();

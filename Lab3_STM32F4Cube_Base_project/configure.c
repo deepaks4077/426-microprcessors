@@ -6,7 +6,6 @@
 ADC_HandleTypeDef ADC1_Handle;
 GPIO_InitTypeDef GPIO_D;
 GPIO_InitTypeDef GPIO_E;
-TIM_HandleTypeDef TIM_Handle;
 
 void configLISD3SH(void);
 void configTimer(void);
