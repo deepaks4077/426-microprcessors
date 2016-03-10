@@ -9,5 +9,6 @@ LIS3DSH_InitTypeDef LIS3DSH_InitStruct;
 GPIO_InitTypeDef GPIO_Struct;
 TIM_HandleTypeDef TIM_Handle;
 void configure(void);
-
+void GPIO_config(void);
+void TimerTim(void);
 #endif

@@ -13,6 +13,7 @@
 #include "supporting_functions.h"
 #include "lis3dsh.h"
 #include "stm32f4xx_hal_gpio.h"
+#include "keypad.h"
 
 /* Private variables ---------------------------------------------------------*/
 //sensitivity_component
@@ -26,7 +27,8 @@ float offset[4][3] = {{0.000947840438189 ,-0.000019936494628 ,-0.000023987290420
 void SystemClock_Config	(void);
 void configure(void);
 float* multiplyMatrix(float* input);
-
+int goal = 0;	 
+	 
 int main(void)
 {		
 	/* MCU Configuration----------------------------------------------------------*/
@@ -44,9 +46,86 @@ int main(void)
 	}
 }
 
+int input = 0;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+
 	float readings[3];
 	float* calibrated_matrix;
+	float output[3];
+	
+	LIS3DSH_ReadACC(output);
+	//output = multiplyMatrix(output);
+	//output = getNormalized(output);
+	printFloatArray(getNormalized(multiplyMatrix(output)),3);
+	
+	if((goal<300) && input == 0){
+		if (GPIO_Pin == GPIO_PIN_6){
+			columns();
+			
+			if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) == 0){
+				printf("1");
+				goal = 1 + (goal*10);
+			}
+			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_2) == 0){
+				printf("2");
+				goal = 2 + (goal*10)
+			}
+			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_3) == 0){
+				printf("3");
+				goal = 3 + (goal*10)
+			}
+			rows();
+		}	
+		else if (GPIO_Pin == GPIO_PIN_7){
+			columns();
+			
+			if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) == 0){
+				printf("4");
+				goal = 4 + (goal*10);
+			}
+			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_2) == 0){
+				printf("5");
+				goal = 5 + (goal*10)
+			}
+			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_3) == 0){
+				printf("6");
+				goal = 6 + (goal*10)
+			}
+			rows();
+		}	
+		else if (GPIO_Pin == GPIO_PIN_8){
+			columns();
+			
+			if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) == 0){
+				printf("7");
+				goal = 7 + (goal*10);
+			}
+			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_2) == 0){
+				printf("8");
+				goal = 8 + (goal*10)
+			}
+			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_3) == 0){
+				printf("9");
+				goal = 9 + (goal*10)
+			}
+			rows();
+		}	
+		else if (GPIO_Pin == GPIO_PIN_9){
+			columns();
+			
+			if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) == 0){
+				
+			}
+			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_2) == 0){
+				printf("0");
+				goal = 0 + (goal*10)
+			}
+			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_3) == 0){
+				input = 1;
+			}
+			rows();
+		}	
+}
 
 	LIS3DSH_ReadACC(readings);
 	calibrated_matrix = multiplyMatrix(readings);

@@ -1,4 +1,12 @@
 #include "configure.h"
+#include "stm32f4xx_hal_tim.h"
+#include "stm32f4xx_hal.h"
+#include "supporting_functions.h"
+
+ADC_HandleTypeDef ADC1_Handle;
+GPIO_InitTypeDef GPIO_D;
+GPIO_InitTypeDef GPIO_E;
+TIM_HandleTypeDef TIM_Handle;
 
 void configLISD3SH(void);
 void configTimer(void);
@@ -48,5 +56,49 @@ void configGPIO(void){
 
 void configTimer(void){
 	
+}
+
+
+void GPIO_config(void){
 	
+	GPIO_D.Pin = GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
+	GPIO_D.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_D.Pull = GPIO_PULLUP;
+	GPIO_D.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+
+	GPIO_E.Pin = GPIO_PIN_7 | GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
+	GPIO_E.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_E.Pull = GPIO_PULLUP;
+	GPIO_E.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+	
+	__HAL_RCC_GPIOD_CLK_ENABLE();
+	__HAL_RCC_GPIOE_CLK_ENABLE();
+	
+	HAL_GPIO_Init(GPIOD,&GPIO_D);
+	HAL_GPIO_Init(GPIOE,&GPIO_E);
+}
+
+void TimerTim(void)
+{
+	TIM_Base_InitTypeDef TIM_TimeBaseStructure;
+	
+	TIM_TimeBaseStructure.Period = 1;
+	TIM_TimeBaseStructure.Prescaler = 1;
+	TIM_TimeBaseStructure.ClockDivision = TIM_CLOCKDIVISION_DIV4;
+	TIM_TimeBaseStructure.CounterMode = TIM_COUNTERMODE_UP;
+	TIM_Handle.Instance = TIM2;
+	TIM_Handle.Init = TIM_TimeBaseStructure;
+	TIM_Handle.Channel = HAL_TIM_ACTIVE_CHANNEL_CLEARED;
+	TIM_Handle.Lock = HAL_UNLOCKED;
+	TIM_Handle.State = HAL_TIM_STATE_READY;
+
+	HAL_TIM_Base_MspInit(&TIM_Handle);
+	__TIM2_CLK_ENABLE();
+	
+	HAL_TIM_Base_Init(&TIM_Handle);
+	HAL_TIM_Base_Start_IT(&TIM_Handle);
+
+	HAL_NVIC_EnableIRQ(TIM2_IRQn);
+	HAL_NVIC_SetPriority(TIM2_IRQn, 9,9);
+
 }

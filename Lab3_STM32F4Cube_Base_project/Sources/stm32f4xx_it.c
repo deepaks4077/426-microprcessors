@@ -175,13 +175,33 @@ void EXTI0_IRQHandler(void)
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
 
-void EXTI_9_5_IRQHandler(void){
-
+void EXTI9_5_IRQnHandler(void)
+{
+	
+	if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6) == 0){
+				HAL_Delay(500);
+		HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
+	}	
+		
+	else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == 0){
+		HAL_Delay(500);
+		HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
+	}
+	
+	else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8) == 0){
+		HAL_Delay(500);
+		HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8);
+	}
+	
+	else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_9) == 0){
+		HAL_Delay(500);
+		HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_9);
+	}
+		
 }
 
-/*void PPP_IRQHandler(void)
-{
-}*/
+
+
 
 /**
   * @}
