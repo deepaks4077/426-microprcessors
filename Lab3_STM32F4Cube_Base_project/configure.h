@@ -6,6 +6,8 @@
 #include "lis3dsh.h"
 
 LIS3DSH_InitTypeDef LIS3DSH_InitStruct;
+GPIO_InitTypeDef GPIO_Struct;
+TIM_HandleTypeDef TIM_Handle;
 void configure(void);
 
 #endif

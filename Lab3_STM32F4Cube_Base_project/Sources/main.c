@@ -15,24 +15,20 @@
 #include "stm32f4xx_hal_gpio.h"
 
 /* Private variables ---------------------------------------------------------*/
-float sensitivity_component[3][3] = {{0.000947840438189 ,-0.000019936494628 ,-0.000023987290420},
+//sensitivity_component
+float offset[4][3] = {{0.000947840438189 ,-0.000019936494628 ,-0.000023987290420},
   {-0.000022355958866 ,0.000964651608004 ,-0.000010465713571},
-   {0.000004748462666 ,-0.000004871582500 , 0.001011092805443}};
-
-float zero_g_component[3];
+  {0.000004748462666 ,-0.000004871582500 , 0.001011092805443},
+	{-0.006723511104368,-0.002245066070008,-0.018506478672045}
+};
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
 void configure(void);
-float* getNormalized(float* inputAcc);
 float* multiplyMatrix(float* input);
-	 
+
 int main(void)
-{	
-	zero_g_component[0] = -0.006723511104368;
-	zero_g_component[1] = -0.002245066070008;
-	zero_g_component[2] = -0.018506478672045;
-	  
+{		
 	/* MCU Configuration----------------------------------------------------------*/
   HAL_Init();
 
@@ -41,51 +37,41 @@ int main(void)
 	
 	/* Initialize all configured peripherals */
 	configure();
-	printf("* Configured * \n");
+	//printf("* Configured * \n");
 	
- while (1){
+	while (1){
 		//HAL_Delay(100);
 	}
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
-	float output[3];
-	
-	LIS3DSH_ReadACC(output);
-	//output = multiplyMatrix(output);
-	//output = getNormalized(output);
-	printFloatArray(getNormalized(multiplyMatrix(output)),3);
-}
+	float readings[3];
+	float* calibrated_matrix;
 
-float* getNormalized(float* inputAcc){
-	int i = 0;
+	LIS3DSH_ReadACC(readings);
+	calibrated_matrix = multiplyMatrix(readings);
 	
-	printFloatArray(inputAcc,3);
-	for(i=0;i<3;i++){
-		inputAcc[i] = inputAcc[i] + zero_g_component[i];
-	}
-	
-	return inputAcc;
+	//printf("x -> %f, y -> %f, z -> %f \n",calibrated_matrix[0],calibrated_matrix[1],calibrated_matrix[2]);
+	printFloatArray(readings,3);
 }
 
 float* multiplyMatrix(float* input){
+	float raw_data[4] = {0};
+	float calibrated_matrix[3] = {0};
+	int i,j;
 	
-	float output[3];
-	float sum;
-	int i = 0;
-	int j = 0;
+	raw_data[0] = input[0];
+	raw_data[1] = input[1];
+	raw_data[2] = input[2];
+	raw_data[3] = 1;
 	
-	printFloatArray(input,3);
-	
-	for(i=0;i<3;i++){
-		for(j=0;j<3;j++){
-			sum += sensitivity_component[i][j]*input[j];
+	for (i=0; i<3; i++){
+		for (j=0; j<4; j++){
+			calibrated_matrix[i] += raw_data[j]*offset[j][i];
 		}
-		output[i] = sum;
-		sum = 0;
 	}
 	
-	return output;
+	return calibrated_matrix;
 }
 
 
