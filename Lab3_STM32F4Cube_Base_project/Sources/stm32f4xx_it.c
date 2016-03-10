@@ -41,6 +41,11 @@
 #include "main.h"
 #include "stm32f4xx_it.h"
 
+#include "stm32f4xx_hal.h"
+#include "supporting_functions.h"
+
+extern TIM_HandleTypeDef TIM_type;
+
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
   */
@@ -200,7 +205,10 @@ void EXTI9_5_IRQnHandler(void)
 		
 }
 
-
+void TIM3_IRQHandler(void)
+{
+	HAL_TIM_IRQHandler(&TIM_type);
+}
 
 
 /**
