@@ -27,7 +27,7 @@
     <ToolsetName>ARM-ADS</ToolsetName>
     <TargetOption>
       <CLKADS>168000000</CLKADS>
-      <pArmCC>5050169::V5.05 update 2 (build 169)::.\ARMCC_505u2</pArmCC>
+      <pArmCC>5050169::V5.05 update 2 (build 169)::ARMCC</pArmCC>
       <OPTTT>
         <gFlags>1</gFlags>
         <BeepAtEnd>1</BeepAtEnd>
@@ -180,12 +180,12 @@
         <SetRegEntry>
           <Number>0</Number>
           <Key>DLGUARM</Key>
-          <Name>(105=-1,-1,-1,-1,0)</Name>
+          <Name>(105=150,185,819,532,0)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
           <Key>ST-LINKIII-KEIL_SWO</Key>
-          <Name>-U303030303030303030303031 -O8398 -S0 -C0 -A0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO19 -TC168000000 -TP21 -TDS8053 -TDT0 -TDC1F -TIE80000001 -TIP8 -FO7 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_1024.FLM -FS08000000 -FL0100000 -FP0($$Device:STM32F407VGTx$CMSIS\Flash\STM32F4xx_1024.FLM)</Name>
+          <Name>-U56FF72065078525316231587 -O8398 -S1 -C0 -A0 -N00("ARM CoreSight SW-DP") -D00(2BA01477) -L00(0) -TO19 -TC168000000 -TP21 -TDS8053 -TDT0 -TDC1F -TIE80000001 -TIP8 -FO7 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_1024.FLM -FS08000000 -FL0100000 -FP0($$Device:STM32F407VGTx$CMSIS\Flash\STM32F4xx_1024.FLM)</Name>
         </SetRegEntry>
         <SetRegEntry>
           <Number>0</Number>
@@ -193,7 +193,40 @@
           <Name>UL2CM3(-S0 -C0 -P0 -FD20000000 -FC1000 -FN1 -FF0STM32F4xx_1024 -FS08000000 -FL0100000 -FP0($$Device:STM32F407VGTx$CMSIS\Flash\STM32F4xx_1024.FLM))</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint/>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>508</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>134220156</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_gpio.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\Base_Project\C:/Keil_v5/ARM/PACK/Keil/STM32F4xx_DFP/2.7.0/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c\508</Expression>
+        </Bp>
+        <Bp>
+          <Number>1</Number>
+          <Type>0</Type>
+          <LineNumber>505</LineNumber>
+          <EnabledFlag>0</EnabledFlag>
+          <Address>0</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>0</BreakIfRCount>
+          <Filename>C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.7.0\Drivers\STM32F4xx_HAL_Driver\Src\stm32f4xx_hal_gpio.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression></Expression>
+        </Bp>
+      </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -243,6 +276,20 @@
       <LintExecutable></LintExecutable>
       <LintConfigFile></LintConfigFile>
       <bLintAuto>0</bLintAuto>
+      <SystemViewers>
+        <Entry>
+          <Name>System Viewer\EXTI</Name>
+          <WinId>35904</WinId>
+        </Entry>
+        <Entry>
+          <Name>System Viewer\GPIOE</Name>
+          <WinId>35903</WinId>
+        </Entry>
+        <Entry>
+          <Name>System Viewer\NVIC</Name>
+          <WinId>35905</WinId>
+        </Entry>
+      </SystemViewers>
       <DebugDescription>
         <Enable>1</Enable>
         <EnableLog>0</EnableLog>
@@ -288,7 +335,7 @@
       <GroupNumber>1</GroupNumber>
       <FileNumber>3</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <Focus>1</Focus>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
@@ -323,6 +370,19 @@
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
+    <File>
+      <GroupNumber>1</GroupNumber>
+      <FileNumber>6</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <Focus>0</Focus>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>.\kalman_filter.c</PathWithFileName>
+      <FilenameWithoutPath>kalman_filter.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
   </Group>
 
   <Group>
@@ -333,7 +393,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>6</FileNumber>
+      <FileNumber>7</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <Focus>1</Focus>
@@ -348,7 +408,7 @@
 
   <Group>
     <GroupName>::CMSIS</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>1</RteFlg>
@@ -356,7 +416,7 @@
 
   <Group>
     <GroupName>::Device</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>1</RteFlg>

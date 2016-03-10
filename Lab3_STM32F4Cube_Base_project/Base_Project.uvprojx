@@ -10,7 +10,7 @@
       <TargetName>Lab 3</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
-      <pArmCC>5050169::V5.05 update 2 (build 169)::.\ARMCC_505u2</pArmCC>
+      <pArmCC>5050169::V5.05 update 2 (build 169)::ARMCC</pArmCC>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F407VGTx</Device>
@@ -174,10 +174,10 @@
             <RunIndependent>0</RunIndependent>
             <UpdateFlashBeforeDebugging>1</UpdateFlashBeforeDebugging>
             <Capability>1</Capability>
-            <DriverSelection>4096</DriverSelection>
+            <DriverSelection>4103</DriverSelection>
           </Flash1>
-          <bUseTDR>1</bUseTDR>
-          <Flash2>BIN\UL2CM3.DLL</Flash2>
+          <bUseTDR>0</bUseTDR>
+          <Flash2>STLink\ST-LINKIII-KEIL_SWO.dll</Flash2>
           <Flash3>"" ()</Flash3>
           <Flash4></Flash4>
           <pFcarmOut></pFcarmOut>
@@ -499,6 +499,11 @@
               <FileName>configure.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\configure.c</FilePath>
+            </File>
+            <File>
+              <FileName>kalman_filter.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\kalman_filter.c</FilePath>
             </File>
           </Files>
         </Group>

@@ -26,5 +26,7 @@
 
 void Error_Handler						(uint16_t error_code);
 void printFloatArray					(float* array, int Length);
+//float* multiplyMatrix 				(float* input);
+//float* getNormalized					(float* inputAcc);
 
 #endif

@@ -23,8 +23,7 @@
 	 //the output of your driver function call and either proceed or call this function to print
 	 //whatever error message you want. Helps you in debugging your code at many points during developing
 	 //your codes
-	 
-	 
+
 void Error_Handler			(uint16_t error_code){
 	//User error handling code, could use printf to relay information to user
 	switch (error_code){	
@@ -54,7 +53,11 @@ void Error_Handler			(uint16_t error_code){
 void printFloatArray(float* array, int Length){
 	int idx = 0;
 	while(idx < Length){
-		printf("%f, ",array[idx]);
+		if(idx == Length -1){
+			printf("%f \n", array[idx]);
+		}else{
+			printf("%f, ",array[idx]);
+		}
 		idx++;
 	}
 	

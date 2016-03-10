@@ -15,14 +15,25 @@
 #include "stm32f4xx_hal_gpio.h"
 
 /* Private variables ---------------------------------------------------------*/
+float sensitivity_component[3][3] = {{0.000947840438189 ,-0.000019936494628 ,-0.000023987290420},
+  {-0.000022355958866 ,0.000964651608004 ,-0.000010465713571},
+   {0.000004748462666 ,-0.000004871582500 , 0.001011092805443}};
+
+float zero_g_component[3];
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
 void configure(void);
-
+float* getNormalized(float* inputAcc);
+float* multiplyMatrix(float* input);
+	 
 int main(void)
 {	
-  /* MCU Configuration----------------------------------------------------------*/
+	zero_g_component[0] = -0.006723511104368;
+	zero_g_component[1] = -0.002245066070008;
+	zero_g_component[2] = -0.018506478672045;
+	  
+	/* MCU Configuration----------------------------------------------------------*/
   HAL_Init();
 
   /* Configure the system clock */
@@ -32,19 +43,51 @@ int main(void)
 	configure();
 	printf("* Configured * \n");
 	
-	while (1){
+ while (1){
 		//HAL_Delay(100);
 	}
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	float output[3];
-	__IO uint32_t tmpreg = 0x00;
-  UNUSED(tmpreg); 
 	
 	LIS3DSH_ReadACC(output);
-	printFloatArray(output,3);
+	//output = multiplyMatrix(output);
+	//output = getNormalized(output);
+	printFloatArray(getNormalized(multiplyMatrix(output)),3);
 }
+
+float* getNormalized(float* inputAcc){
+	int i = 0;
+	
+	printFloatArray(inputAcc,3);
+	for(i=0;i<3;i++){
+		inputAcc[i] = inputAcc[i] + zero_g_component[i];
+	}
+	
+	return inputAcc;
+}
+
+float* multiplyMatrix(float* input){
+	
+	float output[3];
+	float sum;
+	int i = 0;
+	int j = 0;
+	
+	printFloatArray(input,3);
+	
+	for(i=0;i<3;i++){
+		for(j=0;j<3;j++){
+			sum += sensitivity_component[i][j]*input[j];
+		}
+		output[i] = sum;
+		sum = 0;
+	}
+	
+	return output;
+}
+
 
 /** System Clock Configuration*/
 void SystemClock_Config(void){
