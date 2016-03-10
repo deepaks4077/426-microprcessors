@@ -57,7 +57,7 @@ void configTimer(void){
 	
 }
 
-
+//intilize segment pins 
 void GPIO_config(void){
 	
 	GPIO_D.Pin = GPIO_PIN_8 | GPIO_PIN_9 | GPIO_PIN_10 | GPIO_PIN_11 | GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15;
@@ -77,6 +77,7 @@ void GPIO_config(void){
 	HAL_GPIO_Init(GPIOE,&GPIO_E);
 }
 
+//intialize TIM timer 
 void TimerTim(void)
 {
 	TIM_Base_InitTypeDef TIM_Time;
