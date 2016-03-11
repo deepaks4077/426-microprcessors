@@ -17,6 +17,7 @@
 #define DECIMAL_PT								 					 -1
 #define DIRECTIONS									1
 #define ANGLE												0	
+#define GOAL												2	
 
 int Get_Digit_In_Place(float number, int place);
 

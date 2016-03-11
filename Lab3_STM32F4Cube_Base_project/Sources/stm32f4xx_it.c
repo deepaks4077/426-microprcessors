@@ -45,6 +45,7 @@
 
 extern TIM_HandleTypeDef TIM_type;
 extern float Pitch;
+extern int DISPLAY_CTR;
 
 /** @addtogroup STM32F4xx_HAL_Examples
   * @{
@@ -184,32 +185,28 @@ void EXTI0_IRQHandler(void)
 void EXTI9_5_IRQHandler(void)
 {
 	if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6) == 0){
-		HAL_Delay(300);
-		//printf("GPIO_PIN_6");
+		HAL_Delay(400);
 		HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
 	}	
 		
 	else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == 0){
-		HAL_Delay(300);
-		//printf("GPIO_PIN_7");
+		HAL_Delay(400);
 		HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
 	}
 	
 	else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8) == 0){
-		HAL_Delay(300);
-		//printf("GPIO_PIN_8");
+		HAL_Delay(400);
 		HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8);
 	}
 	
 	else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_9) == 0){
-		HAL_Delay(300);
-		//printf("GPIO_PIN_9");
+		HAL_Delay(400);
 		HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_9);
 	}	
 }
 
 void TIM3_IRQHandler(void){
-	//printf("Hello\n\n");
+	DISPLAY_CTR++;
 	HAL_TIM_IRQHandler(&TIM_type);
 }
 

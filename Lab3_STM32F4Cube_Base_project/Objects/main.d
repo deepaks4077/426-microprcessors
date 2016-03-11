@@ -47,3 +47,4 @@
 .\objects\main.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\objects\main.o: ..\Lab3_STM32F4Cube_Base_project\keypad.h
 .\objects\main.o: ..\Lab3_STM32F4Cube_Base_project\segments.h
+.\objects\main.o: ..\Lab3_STM32F4Cube_Base_project\kalman_filter.h

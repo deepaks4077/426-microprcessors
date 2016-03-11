@@ -16,6 +16,7 @@
 #include "math.h"
 #include "keypad.h"
 #include "segments.h"
+#include "kalman_filter.h"
 
 /* Private variables ---------------------------------------------------------*/
 //sensitivity_component
@@ -25,19 +26,32 @@ float offset[4][3] = {{0.000947840438189 ,-0.000019936494628 ,-0.000023987290420
 	{-0.006723511104368,-0.002245066070008,-0.018506478672045}
 };
 
+float Pitch;
+
+int UpdateCtr;
+float first_digit, second_digit, third_digit;
+int decimal_pos = -1;
+
+int DISPLAY_CTR = 0;
+int DISPLAY_FLAG = 0;
+float DISPLAY_ANGLE = 0.0;
+int DISPLAY_DIRECTIONS_OR_ANGLE_FLAG = ANGLE;
+
+kalman_state kSx;
+kalman_state kSy;
+kalman_state kSz;
+
+int goal = 0;	
+int input = 0;
+
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
 void configure(void);
 float* multiplyMatrix(float* input);
-float Pitch;
-int UpdateCtr;
-float first_digit, second_digit, third_digit;
-int decimal_pos = -1;
-int DISPLAY_DIRECTIONS_OR_ANGLE_FLAG = ANGLE;
 void getNewValue(float angle);
-void displayAngle(float angle);
-void displayDirections(void);
-int goal = 0;	 
+void displayAngle(void);
+void displayDirections(void); 
+void buttonPressHandler(uint16_t GPIO_Pin);
 	 
 int main(void)
 {		
@@ -48,6 +62,24 @@ int main(void)
   SystemClock_Config();
 	
 	UpdateCtr = 0;
+	
+	kSx.k = 0.0;
+	kSx.p = 1000;
+	kSx.q = 5;
+	kSx.r = 240;
+	kSx.x = 0.0;
+
+	kSy.k = 0.0;
+	kSy.p = 1000;
+	kSy.q = 5;
+	kSy.r = 240;
+	kSy.x = 0.0;
+
+	kSz.k = 0.0;
+	kSz.p = 1000;
+	kSz.q = 5;
+	kSz.r = 240;
+	kSz.x = 1.0;
 	
 	/* Initialize all configured peripherals */
 	configure();
@@ -61,29 +93,49 @@ int main(void)
 	}
 }
 
-int input = 0;
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 	float readings[3];
 	float* calibrated_matrix;
+	float* kalman_output;
 	float Ax, Ay,Az;
 	float Roll;
 	
 	LIS3DSH_ReadACC(readings);
+	
+	kalman_output = multiplyMatrix(readings);
+	
+	readings[0] = kalmanFilter(readings[0],&kSx); 
+	readings[1] = kalmanFilter(readings[1],&kSy);
+	readings[2] = kalmanFilter(readings[2],&kSz);
+	
 	calibrated_matrix = multiplyMatrix(readings);
 	Ax = calibrated_matrix[0];
 	Ay = calibrated_matrix[1];
 	Az = calibrated_matrix[2];
 	
-	Pitch = atan2(Ax,sqrt(pow(Ay,2) + pow(Az,2))) * 180 / 3.1415926515 + 90;
-	Roll = atan2(Ay,sqrt(pow(Ax,2) + pow(Az,2))) * 180 / 3.1415926515;
+	Pitch = atan2(Ax,Az) * 180 / 3.1415926515;
+	//Pitch = atan2(Ax,sqrt(pow(Ay,2) + pow(Az,2))) * 180 / 3.1415926515;
+	//Roll = atan2(Ay,sqrt(pow(Ax,2) + pow(Az,2))) * 180 / 3.1415926515;
 	
+	buttonPressHandler(GPIO_Pin);
 	// need to initiate with interrupt so that we know when a button is pressed 
+	 
+	//printf("x -> %f, y -> %f, z -> %f \n",kalman_output[0],kalman_output[1],kalman_output[2]);
+	//printf("Kalman = x -> %f, y -> %f, z -> %f \n",calibrated_matrix[0],calibrated_matrix[1],calibrated_matrix[2]);
+	//printf("Pitch = %f \n", Pitch);
+	//printf("Roll = %f \n", Roll + 90);
+	//printFloatArray(readings,3);
+}
+
+void buttonPressHandler(uint16_t GPIO_Pin){
 	if((goal<180) && input == 0){
+		//displayAngle(goal);
 		if (GPIO_Pin == GPIO_PIN_6){ 
-			//printf("here12");																//so if user presses button on first row check which column button was on 
-			columns();										//getting the column bit
+			//so if user presses button on first row check which column button was on 
+			columns();																							//getting the column bit
 			
+			//DISPLAY_DIRECTIONS_OR_ANGLE_FLAG = GOAL;
 			if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0){
 				printf("1");
 				goal = 1 + (goal*10);
@@ -104,15 +156,19 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 			if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0){
 				printf("4");
 				goal = 4 + (goal*10);
+
 			}
 			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){
 				printf("5");
 				goal = 5 + (goal*10);
+
 			}
 			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0){
 				printf("6");
 				goal = 6 + (goal*10);
+
 			}
+		
 			rows();
 		}	
 		else if (GPIO_Pin == GPIO_PIN_8){
@@ -121,15 +177,19 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 			if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0){
 				printf("7");
 				goal = 7 + (goal*10);
+
 			}
 			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){
 				printf("8");
 				goal = 8 + (goal*10);
+
 			}
 			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0){
 				printf("9");
 				goal = 9 + (goal*10);
+
 			}
+	
 			rows();
 		}	
 		else if (GPIO_Pin == GPIO_PIN_9){
@@ -137,10 +197,12 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 			
 			if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0){
 				goal = 0;
+
 			}
 			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){
 				printf("0");
 				goal = 0 + (goal*10);
+
 			}
 			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0){
 				input = 1;
@@ -153,29 +215,31 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 				rows();
 			}
 		}	
-	} 
-
-	//printf("x -> %f, y -> %f, z -> %f \n",calibrated_matrix[0],calibrated_matrix[1],calibrated_matrix[2]);
-	//printf("Pitch = %f \n", Pitch);
-	//printf("Roll = %f \n", Roll + 90);
-	//printFloatArray(readings,3);
+	}
 }
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 	if(DISPLAY_DIRECTIONS_OR_ANGLE_FLAG == ANGLE){
-		displayAngle(Pitch);
+		if(DISPLAY_CTR % 200 == 0){
+			getNewValue(Pitch);
+		}
+		displayAngle();
 	}else if(DISPLAY_DIRECTIONS_OR_ANGLE_FLAG == DIRECTIONS){
 		displayDirections();
+	}else if(DISPLAY_DIRECTIONS_OR_ANGLE_FLAG == GOAL){
+		if(DISPLAY_CTR % 200 == 0){
+			getNewValue(goal);
+		}
+		displayAngle();
 	}
 }
 
-void displayAngle(float angle){
+void displayAngle(void){
 	if(UpdateCtr == 0){
-		getNewValue(angle);
 		
-		if(angle < 10){
+		if(DISPLAY_ANGLE< 10){
 			decimal_pos = 1;
-		}else if(angle < 100){
+		}else if(DISPLAY_ANGLE < 100){
 			decimal_pos = 2;
 		}else{
 			decimal_pos = 3;
@@ -219,7 +283,10 @@ void displayDirections(void){
 		Reset_Display();
 		Display_Digit_At_Pos(1, 11);
 	}else if(Pitch > lower_bound && Pitch < upper_bound){
-		displayAngle(goal);
+		if(DISPLAY_CTR % 200 == 0){
+			getNewValue(fabsf(Pitch));
+		}
+		displayAngle();
 	}
 }
 
@@ -243,6 +310,8 @@ float* multiplyMatrix(float* input){
 }
 
 void getNewValue(float angle){
+	
+	angle = fabsf(angle);
 	if(angle < 10){
 			first_digit = Get_Digit_In_Place(angle*10,1);
 			second_digit = Get_Digit_In_Place(angle*10,10);
@@ -256,6 +325,8 @@ void getNewValue(float angle){
 			second_digit = Get_Digit_In_Place(angle/10.0,10);
 			third_digit = Get_Digit_In_Place(angle/10.0,100);
 	}
+	
+	DISPLAY_ANGLE = angle;
 }
 
 

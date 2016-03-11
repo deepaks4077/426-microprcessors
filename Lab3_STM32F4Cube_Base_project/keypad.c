@@ -7,15 +7,17 @@
 GPIO_InitTypeDef Rows;
 GPIO_InitTypeDef Columns;
 /*
-ROW 1 --> GPIO_PIN_6
-ROW 2 --> GPIO_PIN_7
-ROW 3 --> GPIO_PIN_8
-ROW 4 --> GPIO_PIN_9
+	ROW 1 --> GPIO_PIN_6
+	ROW 2 --> GPIO_PIN_7
+	ROW 3 --> GPIO_PIN_8
+	ROW 4 --> GPIO_PIN_9
 
-COLUMN 1 --> GPIO_PIN_1
-COLUMN 2 --> GPIO_PIN_2
-COLUMN 3 --> GPIO_PIN_3
+	COLUMN 1 --> GPIO_PIN_5
+	COLUMN 2 --> GPIO_PIN_6
+	COLUMN 3 --> GPIO_PIN_7
 */
+
+
 void rows(void){
 	
 	__HAL_RCC_GPIOC_CLK_ENABLE();

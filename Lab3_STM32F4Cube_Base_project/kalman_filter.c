@@ -3,7 +3,6 @@
 float kalmanFilter(float Measurement, kalman_state* kstate){
 	
 	float tmp;
-
 	kstate->p = kstate->p + kstate->q;
 	tmp = (kstate->p + kstate->r);
 	
