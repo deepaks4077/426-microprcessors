@@ -30,26 +30,43 @@ Build target 'Lab 3'
 compiling main.c...
 ..\Lab3_STM32F4Cube_Base_project\keypad.h(8): warning:  #1-D: last line of file ends without a newline
   #endif
-..\Lab3_STM32F4Cube_Base_project\segments.h(36): warning:  #1-D: last line of file ends without a newline
+..\Lab3_STM32F4Cube_Base_project\segments.h(68): warning:  #1-D: last line of file ends without a newline
   #endif
-..\Lab3_STM32F4Cube_Base_project\kalman_filter.h(20): warning:  #1-D: last line of file ends without a newline
+..\Lab3_STM32F4Cube_Base_project\kalman_filter.h(23): warning:  #1-D: last line of file ends without a newline
   #endif
-Sources\main.c(100): warning:  #550-D: variable "kalman_output" was set but never used
+Sources\main.c(137): warning:  #550-D: variable "kalman_output" was set but never used
         float* kalman_output;
-Sources\main.c(102): warning:  #550-D: variable "Roll" was set but never used
-        float Roll;
-Sources\main.c(310): warning:  #1166-D: returning pointer to local variable
+Sources\main.c(138): warning:  #550-D: variable "Ay" was set but never used
+        float Ax, Ay,Az;
+Sources\main.c(351): warning:  #1166-D: returning pointer to local variable
         return calibrated_matrix;
-Sources\main.c(325): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+Sources\main.c(366): warning:  #1035-D: single-precision operand implicitly converted to double-precision
                         first_digit = Get_Digit_In_Place(angle/10.0,1);
-Sources\main.c(326): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+Sources\main.c(367): warning:  #1035-D: single-precision operand implicitly converted to double-precision
                         second_digit = Get_Digit_In_Place(angle/10.0,10);
-Sources\main.c(327): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+Sources\main.c(368): warning:  #1035-D: single-precision operand implicitly converted to double-precision
                         third_digit = Get_Digit_In_Place(angle/10.0,100);
 Sources\main.c: 9 warnings, 0 errors
+compiling supporting_functions.c...
+compiling stm32f4xx_it.c...
+..\Lab3_STM32F4Cube_Base_project\segments.h(68): warning:  #1-D: last line of file ends without a newline
+  #endif
+Sources\stm32f4xx_it.c: 1 warning, 0 errors
+compiling configure.c...
+configure.h(13): warning:  #1-D: last line of file ends without a newline
+  #endif
+configure.c(120): warning:  #1-D: last line of file ends without a newline
+  }
+configure.c: 2 warnings, 0 errors
+compiling segments.c...
+segments.h(68): warning:  #1-D: last line of file ends without a newline
+  #endif
+segments.c(151): warning:  #1-D: last line of file ends without a newline
+        
+segments.c: 2 warnings, 0 errors
 linking...
-Program Size: Code=19822 RO-data=738 RW-data=124 ZI-data=1460  
-".\Objects\Base_Project.axf" - 0 Error(s), 9 Warning(s).
+Program Size: Code=15924 RO-data=604 RW-data=120 ZI-data=1312  
+".\Objects\Base_Project.axf" - 0 Error(s), 14 Warning(s).
 
 <h2>Software Packages used:</h2>
 

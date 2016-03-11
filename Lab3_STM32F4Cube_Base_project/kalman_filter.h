@@ -1,6 +1,9 @@
 #ifndef KALMAN_FILTER_H
 #define KALMAN_FILTER_H
 
+/*
+*	The Kalman filter state structure
+*/
 typedef struct kalman{
 	float q; 
 	float r; 
@@ -15,6 +18,6 @@ typedef struct kalman{
  * @param Kalman state as a C struct
  * @return Float
  **/
-float kalmanFilter(float Input, kalman_state* kstate);
+float kalmanFilter(float Measurement, kalman_state* kstate);
 
 #endif

@@ -18,6 +18,16 @@ GPIO_InitTypeDef Columns;
 */
 
 
+/*	
+	Function intitates the pins for both the rows and columns. Rows are set to input with interrupt,
+	so as to detect when a button in a row has been pressed to produce a 0 bit. Pullup to activate 
+	internal resistors to get bit on line as 1.
+	
+	Column is intitated to output so the bits remain 0 when read. 
+	
+	Interrupt line for lines 5 to 9 are started. Thos are the lines that the rows are connected to. 
+	We are therefore checking if a row is interrupted.
+*/
 void rows(void){
 	
 	__HAL_RCC_GPIOC_CLK_ENABLE();
@@ -39,6 +49,14 @@ void rows(void){
 	HAL_NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
 }
 
+
+/*
+	Columns funtions swithches what is being read, so now column bits are intialized to
+	to 1 and input, so we can now detect the row in which the button was pressed.
+
+	Once the button being pressed has been determined the interrupt line is disabled so 
+	we can start on a new button. 
+*/
 void columns(void){
 	
 	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_9);

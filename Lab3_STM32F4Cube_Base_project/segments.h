@@ -19,18 +19,50 @@
 #define ANGLE												0	
 #define GOAL												2	
 
+/**
+  * @brief  This function extracts the digit in the position 'place'
+  * @param  [int] number -> The number to be extracted from 
+	*	@param  [int] place  -> The decimal position of the digit in the number
+  * @retval [int]						Returns the digit extracted from number
+  */
 int Get_Digit_In_Place(float number, int place);
 
+/**
+  * @brief  This function extracts the digit in the position 'place'
+  * @param  [int] number -> The number to be extracted from 
+	*	@param  [int] place  -> The decimal position of the digit in the number
+  * @retval [int]						Returns the digit extracted from number
+  */
 void Display_Digit_At_Pos(int pos, int digit);
 
+/**
+  * @brief  This function resets the LED display
+  * @retval [none]					
+  */
 void Reset_Display(void);
 
+/**
+  * @brief  This function clears the Decimal point on the LED display
+  * @retval [none]					
+  */
 void ClearDecimal(void);
 
+/**
+  * @brief  This function adds the Decimal point to the LED display
+  * @retval [none]					
+  */
 void AddDecimal(void);
 
+/**
+  * @brief  This function adds the Celsius symbol to the LED display
+  * @retval [none]					
+  */
 void AddCelsius(void);
 
+/**
+  * @brief  This function clears the Celsius symbol to the LED display
+  * @retval [none]					
+  */
 void ClearCelsius(void);
 
 #endif

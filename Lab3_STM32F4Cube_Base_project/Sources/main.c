@@ -27,30 +27,67 @@ float offset[4][3] = {{0.000947840438189 ,-0.000019936494628 ,-0.000023987290420
 };
 
 float Pitch;
+float Roll;
 
-int UpdateCtr;
 float first_digit, second_digit, third_digit;
 int decimal_pos = -1;
 
-int DISPLAY_CTR = 0;
-int DISPLAY_FLAG = 0;
-float DISPLAY_ANGLE = 0.0;
-int DISPLAY_DIRECTIONS_OR_ANGLE_FLAG = ANGLE;
+int DISPLAY_CTR = 0; 														// Controls the rate at which a new value is displayed
+int UPDATE_DIGIT_CTR = 0; 											// Controls the digit to display on the LED
+float DISPLAY_ANGLE = 0.0;											// The angle to display	
+int DISPLAY_DIRECTIONS_OR_ANGLE_FLAG = ANGLE;		// The mode of the application. Angle mode to display an angle and Directions mode
 
 kalman_state kSx;
 kalman_state kSy;
 kalman_state kSz;
 
-int goal = 0;	
+/*
+*	The target angle
+*/
+int goal = 0;
+
+/*
+*	Controls keypad input mode
+*/
 int input = 0;
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config	(void);
+
 void configure(void);
+/**
+  * @brief  This function calculates the calibrated readings 
+  * @param  [float] 		The acceleremoter raw readings
+	* @retval [float]			The calibrated readings				
+  */
 float* multiplyMatrix(float* input);
+
+/**
+  * @brief  This function updates the digits that need to be displayed on the LED
+  * @param  [float] 		The angle to get the LED digits from
+	* @retval [none]					
+  */
 void getNewValue(float angle);
+
+/**
+  * @brief  This function handles the logic to display angles on the LED
+  * @param  [void] 
+	* @retval [none]					
+  */
 void displayAngle(void);
+
+/**
+  * @brief  This function handles the logic to display the directions to the goal angle
+  * @param  [void] 		
+	* @retval [none]					
+  */
 void displayDirections(void); 
+
+/**
+  * @brief  The handler for a button press
+  * @param  [uint16_t]	The GPIO Pin which was pressed 		
+	* @retval [none]					
+  */
 void buttonPressHandler(uint16_t GPIO_Pin);
 	 
 int main(void)
@@ -61,7 +98,7 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 	
-	UpdateCtr = 0;
+	UPDATE_DIGIT_CTR = 0;
 	
 	kSx.k = 0.0;
 	kSx.p = 1000;
@@ -84,8 +121,8 @@ int main(void)
 	/* Initialize all configured peripherals */
 	configure();
 	
+	/* Initialize keypad to read rows first */
 	rows();
-	//printf("* Configured * \n");
 	
 	AddCelsius();
 	while (1){
@@ -99,71 +136,60 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	float* calibrated_matrix;
 	float* kalman_output;
 	float Ax, Ay,Az;
-	float Roll;
 	
-	LIS3DSH_ReadACC(readings);
+	if(GPIO_Pin == GPIO_PIN_0){
+		LIS3DSH_ReadACC(readings);
 	
-	kalman_output = multiplyMatrix(readings);
+		kalman_output = multiplyMatrix(readings);
 	
-	readings[0] = kalmanFilter(readings[0],&kSx); 
-	readings[1] = kalmanFilter(readings[1],&kSy);
-	readings[2] = kalmanFilter(readings[2],&kSz);
+		readings[0] = kalmanFilter(readings[0],&kSx); 
+		readings[1] = kalmanFilter(readings[1],&kSy);
+		readings[2] = kalmanFilter(readings[2],&kSz);
 	
-	calibrated_matrix = multiplyMatrix(readings);
-	Ax = calibrated_matrix[0];
-	Ay = calibrated_matrix[1];
-	Az = calibrated_matrix[2];
+		calibrated_matrix = multiplyMatrix(readings);
+		Ax = calibrated_matrix[0];
+		Ay = calibrated_matrix[1];
+		Az = calibrated_matrix[2];
 	
-	Pitch = atan2(Ax,Az) * 180 / 3.1415926515;
-	//Pitch = atan2(Ax,sqrt(pow(Ay,2) + pow(Az,2))) * 180 / 3.1415926515;
-	//Roll = atan2(Ay,sqrt(pow(Ax,2) + pow(Az,2))) * 180 / 3.1415926515;
+		Pitch = atan2(Ax,Az) * 180 / 3.1415926515;
+	}
 	
 	buttonPressHandler(GPIO_Pin);
-	// need to initiate with interrupt so that we know when a button is pressed 
-	 
-	//printf("x -> %f, y -> %f, z -> %f \n",kalman_output[0],kalman_output[1],kalman_output[2]);
-	//printf("Kalman = x -> %f, y -> %f, z -> %f \n",calibrated_matrix[0],calibrated_matrix[1],calibrated_matrix[2]);
-	//printf("Pitch = %f \n", Pitch);
-	//printf("Roll = %f \n", Roll + 90);
-	//printFloatArray(readings,3);
 }
 
+/*
+	Determines which button has been pressed, by first finding the row and then the column. 
+*/
 void buttonPressHandler(uint16_t GPIO_Pin){
 	if((goal<180) && input == 0){
-		//displayAngle(goal);
 		if (GPIO_Pin == GPIO_PIN_6){ 
-			//so if user presses button on first row check which column button was on 
-			columns();																							//getting the column bit
-			
-			//DISPLAY_DIRECTIONS_OR_ANGLE_FLAG = GOAL;
+			// initiate the columns to set them as input to read the bit 			
+			columns();																							
+			// row one column 1
 			if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0){
 				printf("1");
 				goal = 1 + (goal*10);
-			}
-			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){
+			}else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){ // row one column 2
 				printf("2");
 				goal = 2 + (goal*10);
-			}
-			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0){
+			}else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0){ // row one column 3
 				printf("3");
 				goal = 3 + (goal*10);
 			}
-			rows();												//reset to original so that next button can be pressed 
-		}	
-		else if (GPIO_Pin == GPIO_PIN_7){
+			// start the rows again for the next button press
+			rows();												
+		}	else if (GPIO_Pin == GPIO_PIN_7){
 			columns();
-			
+			// row 2 column 1
 			if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0){
 				printf("4");
 				goal = 4 + (goal*10);
 
-			}
-			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){
+			}else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){ // row 2 column 2 
 				printf("5");
 				goal = 5 + (goal*10);
 
-			}
-			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0){
+			}else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0){ // row 2 column 3
 				printf("6");
 				goal = 6 + (goal*10);
 
@@ -173,37 +199,42 @@ void buttonPressHandler(uint16_t GPIO_Pin){
 		}	
 		else if (GPIO_Pin == GPIO_PIN_8){
 			columns();
-			
+			// row 3 column 1 
 			if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0){
 				printf("7");
 				goal = 7 + (goal*10);
 
-			}
-			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){
+			}else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){ // row 3 column 2
 				printf("8");
 				goal = 8 + (goal*10);
 
-			}
-			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0){
+			}else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0){ // row 3 column 3
 				printf("9");
 				goal = 9 + (goal*10);
 
 			}
-	
+
 			rows();
 		}	
 		else if (GPIO_Pin == GPIO_PIN_9){
 			columns();
-			
+			// row 4 column 1 
 			if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0){
 				goal = 0;
 
-			}
-			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){
+			}else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){ // row 4 column 2 
 				printf("0");
 				goal = 0 + (goal*10);
 
 			}
+			// row 4 column 3
+			
+			/*
+				Once the hash button is presed, get out of this "if" statement and stop checking for button 
+				presses and move to the direction function.
+				
+				Clear all interrupts and disable so that we dont have to check if a row is pressed again.
+			*/	
 			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0){
 				input = 1;
 				printf("Changed mode, GOAL = %d\n", goal);
@@ -211,7 +242,9 @@ void buttonPressHandler(uint16_t GPIO_Pin){
 				HAL_NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
 				HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 			}
+			
 			if(input == 0){
+				// Added to handle a '0' input to the last row
 				rows();
 			}
 		}	
@@ -235,7 +268,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 }
 
 void displayAngle(void){
-	if(UpdateCtr == 0){
+	if(UPDATE_DIGIT_CTR == 0){
 		
 		if(DISPLAY_ANGLE< 10){
 			decimal_pos = 1;
@@ -252,8 +285,8 @@ void displayAngle(void){
 			AddDecimal();
 		}
 		
-		UpdateCtr++;
-	}else if(UpdateCtr == 1){
+		UPDATE_DIGIT_CTR++;
+	}else if(UPDATE_DIGIT_CTR == 1){
 		Reset_Display();
 		Display_Digit_At_Pos(2,second_digit);
 		
@@ -261,14 +294,20 @@ void displayAngle(void){
 			AddDecimal();
 		}
 		
-		UpdateCtr++;
+		UPDATE_DIGIT_CTR++;
 	}else{
 		Reset_Display();
 		Display_Digit_At_Pos(3,first_digit);
-		UpdateCtr = 0;
+		UPDATE_DIGIT_CTR = 0;
 	}
 }
 
+/*
+	Method depends on Pitch for user input.
+	sets the lower and upperbounds according to the set goal.
+	stay in this function as long as reset is not pressed. 
+	If Pitch is not in range of goal show directins in which way to tilt.
+*/
 void displayDirections(void){
 	
 	float upper_bound = goal + 5.0;
@@ -276,13 +315,16 @@ void displayDirections(void){
 	
 	Reset_Display();
 	
-	if(Pitch < lower_bound){ // Clockwise
+	if(Pitch < lower_bound){ 
+		// Counter-Clockwise
 		Reset_Display();
 		Display_Digit_At_Pos(1, 12);
-	}else if(Pitch > upper_bound){ // Counter-Clockwise
+	}else if(Pitch > upper_bound){ 
+		// Clockwise
 		Reset_Display();
 		Display_Digit_At_Pos(1, 11);
 	}else if(Pitch > lower_bound && Pitch < upper_bound){
+		// in range display current pitch
 		if(DISPLAY_CTR % 200 == 0){
 			getNewValue(fabsf(Pitch));
 		}

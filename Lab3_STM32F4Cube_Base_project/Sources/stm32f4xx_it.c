@@ -170,8 +170,9 @@ void SysTick_Handler(void)
 /*  available peripheral interrupt handler's name please refer to the startup */
 /*  file (startup_stm32f4xx.s).                                               */
 /******************************************************************************/
+
 /**
-  * @brief  This function handles PPP interrupt request.
+  * @brief  This function handles EXTIO interrupt request.
   * @param  None
   * @retval None
   */
@@ -181,30 +182,41 @@ void EXTI0_IRQHandler(void)
 	HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_0);
 }
 
-
+/**
+  * @brief  This function handles EXTIO (5-9) interrupt requests.
+  * @param  None
+  * @retval None
+  */
 void EXTI9_5_IRQHandler(void)
 {
+	// row 1
 	if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6) == 0){
-		HAL_Delay(400);
+		// Delay to fix debouncing
+		HAL_Delay(350);
 		HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
 	}	
-		
+	// row 2	
 	else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == 0){
-		HAL_Delay(400);
+		HAL_Delay(350);
 		HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
 	}
-	
+	// row 3
 	else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8) == 0){
-		HAL_Delay(400);
+		HAL_Delay(350);
 		HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8);
 	}
-	
+	// row 4
 	else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_9) == 0){
-		HAL_Delay(400);
+		HAL_Delay(350);
 		HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_9);
 	}	
 }
 
+/**
+  * @brief  This function handles TIM3 interrupts
+  * @param  None
+  * @retval None
+  */
 void TIM3_IRQHandler(void){
 	DISPLAY_CTR++;
 	HAL_TIM_IRQHandler(&TIM_type);

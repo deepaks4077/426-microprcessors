@@ -25,8 +25,12 @@
 #define EXTI_SPI1_FAIL				((uint16_t) 5)
 
 void Error_Handler						(uint16_t error_code);
-void printFloatArray					(float* array, int Length);
-//float* multiplyMatrix 				(float* input);
-//float* getNormalized					(float* inputAcc);
 
+/**
+  * @brief  This function prints a float array
+  * @param  [float*] 	array 	-> The array to print
+	*	@param  [int] 		Length	-> The length of the array
+  * @retval [none]
+  */
+void printFloatArray					(float* array, int Length);
 #endif

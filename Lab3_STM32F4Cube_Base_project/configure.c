@@ -3,14 +3,33 @@
 #include "stm32f4xx_hal.h"
 #include "supporting_functions.h"
 
-ADC_HandleTypeDef ADC1_Handle;
 GPIO_InitTypeDef GPIO_D;
 GPIO_InitTypeDef GPIO_E;
 TIM_HandleTypeDef TIM_type;
+LIS3DSH_InitTypeDef LIS3DSH_InitStruct;
 
+/**
+  * @brief  This function configures the Accelerometer
+	* @retval [none]							
+  */
 void configLISD3SH(void);
+
+/**
+  * @brief  This function configures the TIM3 timer
+	* @retval [none]							
+  */
 void configTimer(void);
+
+/**
+  * @brief  This function configures the GPIOE 0 Pin to interrupt mode
+	* @retval [none]							
+  */
 void configGPIO(void);
+
+/**
+  * @brief  This function configures GPIO pins for the 7-segment display
+	* @retval [none]							
+  */
 void configSegmentPins(void);
 
 void configure(void){
@@ -24,11 +43,11 @@ void configLISD3SH(void){
 		
 	LIS3DSH_DRYInterruptConfigTypeDef LIS3DSH_IntConfigStruct;
 	
-	LIS3DSH_InitStruct.Power_Mode_Output_DataRate = LIS3DSH_DATARATE_25;          /* Ppower down or /active mode with output data rate 3.125 / 6.25 / 12.5 / 25 / 50 / 100 / 400 / 800 / 1600 HZ */
+	LIS3DSH_InitStruct.Power_Mode_Output_DataRate = LIS3DSH_DATARATE_25;          /* Power down or /active mode with output data rate 3.125 / 6.25 / 12.5 / 25 / 50 / 100 / 400 / 800 / 1600 HZ */
   LIS3DSH_InitStruct.Axes_Enable = LIS3DSH_XYZ_ENABLE ;                         /* Axes enable */
   LIS3DSH_InitStruct.Continous_Update = LIS3DSH_ContinousUpdate_Disabled; 			/* Block or update Low/High registers of data until all data is read */
 	LIS3DSH_InitStruct.AA_Filter_BW = LIS3DSH_AA_BW_50;												  	/* Choose anti-aliasing filter BW 800 / 400 / 200 / 50 Hz*/
-  LIS3DSH_InitStruct.Full_Scale = LIS3DSH_FULLSCALE_2;                         /* Full scale 2 / 4 / 6 / 8 / 16 g */
+  LIS3DSH_InitStruct.Full_Scale = LIS3DSH_FULLSCALE_2;                         	/* Full scale 2 / 4 / 6 / 8 / 16 g */
   LIS3DSH_InitStruct.Self_Test = LIS3DSH_SELFTEST_NORMAL;
 
 	LIS3DSH_IntConfigStruct.Dataready_Interrupt = LIS3DSH_DATA_READY_INTERRUPT_ENABLED;  
@@ -85,21 +104,17 @@ void configTimer(void)
 	TIM_Time.ClockDivision = TIM_CLOCKDIVISION_DIV1;
 	TIM_Time.RepetitionCounter = 0;
 	
-	//initiate TIM3 
 	TIM_type.Instance = TIM3;
 	TIM_type.Init = TIM_Time; 
 	TIM_type.Channel = HAL_TIM_ACTIVE_CHANNEL_CLEARED;
 	TIM_type.Lock = HAL_UNLOCKED;
 	TIM_type.State = HAL_TIM_STATE_READY;
 	
-	//Starting the clock 
-	//HAL_TIM_Base_MspInit(&TIM_type); 
 	__TIM3_CLK_ENABLE(); 
 	
 	HAL_TIM_Base_Init(&TIM_type);	
 	HAL_TIM_Base_Start_IT(&TIM_type);
 	
-	//Starting the interrupts
 	HAL_NVIC_EnableIRQ(TIM3_IRQn);
 	HAL_NVIC_SetPriority(TIM3_IRQn, 9, 9);
 }

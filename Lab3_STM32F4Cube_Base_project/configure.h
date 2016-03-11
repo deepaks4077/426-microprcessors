@@ -5,8 +5,9 @@
 #include "supporting_functions.h"
 #include "lis3dsh.h"
 
-LIS3DSH_InitTypeDef LIS3DSH_InitStruct;
-GPIO_InitTypeDef GPIO_Struct;
-TIM_HandleTypeDef TIM_Handle;
+/**
+  * @brief  This function configures the Accelerometer, GPIO and TIM3
+	* @retval [none]							
+  */
 void configure(void);
 #endif
