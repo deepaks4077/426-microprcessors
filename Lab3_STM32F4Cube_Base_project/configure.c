@@ -6,22 +6,27 @@
 ADC_HandleTypeDef ADC1_Handle;
 GPIO_InitTypeDef GPIO_D;
 GPIO_InitTypeDef GPIO_E;
+TIM_HandleTypeDef TIM_type;
 
 void configLISD3SH(void);
 void configTimer(void);
 void configGPIO(void);
+void GPIO_config(void);
+void TimerTim(void);
 
 void configure(void){
 	configGPIO();
 	configLISD3SH();
-	configTimer();
+	//configTimer();
+	GPIO_config();
+	TimerTim();
 }
 
 void configLISD3SH(void){
 		
 	LIS3DSH_DRYInterruptConfigTypeDef LIS3DSH_IntConfigStruct;
 	
-	LIS3DSH_InitStruct.Power_Mode_Output_DataRate = LIS3DSH_DATARATE_100;          /* Ppower down or /active mode with output data rate 3.125 / 6.25 / 12.5 / 25 / 50 / 100 / 400 / 800 / 1600 HZ */
+	LIS3DSH_InitStruct.Power_Mode_Output_DataRate = LIS3DSH_DATARATE_3_125;          /* Ppower down or /active mode with output data rate 3.125 / 6.25 / 12.5 / 25 / 50 / 100 / 400 / 800 / 1600 HZ */
   LIS3DSH_InitStruct.Axes_Enable = LIS3DSH_XYZ_ENABLE ;                         /* Axes enable */
   LIS3DSH_InitStruct.Continous_Update = LIS3DSH_ContinousUpdate_Disabled; 			/* Block or update Low/High registers of data until all data is read */
 	LIS3DSH_InitStruct.AA_Filter_BW = LIS3DSH_AA_BW_50;												  	/* Choose anti-aliasing filter BW 800 / 400 / 200 / 50 Hz*/
@@ -77,16 +82,31 @@ void GPIO_config(void){
 	HAL_GPIO_Init(GPIOE,&GPIO_E);
 }
 
-//intialize TIM timer 
 void TimerTim(void)
 {
 	TIM_Base_InitTypeDef TIM_Time;
 	
-	TIM_Time.Period = 0x0000;
+	TIM_Time.Period = 10;
 	TIM_Time.CounterMode = TIM_COUNTERMODE_UP;
-	TIM_Time.Prescaler = 0x0000;
+	TIM_Time.Prescaler = 21000;
 	TIM_Time.ClockDivision = TIM_CLOCKDIVISION_DIV4;
-	TIM_Time.RepetitionCounter = 0x00;
+	TIM_Time.RepetitionCounter = 0;
 	
-
+	//initiate TIM3 
+	TIM_type.Instance = TIM3;
+	TIM_type.Init = TIM_Time; 
+	TIM_type.Channel = HAL_TIM_ACTIVE_CHANNEL_CLEARED;
+	TIM_type.Lock = HAL_UNLOCKED;
+	TIM_type.State = HAL_TIM_STATE_READY;
+	
+	//Starting the clock 
+	HAL_TIM_Base_MspInit(&TIM_type); 
+	__TIM3_CLK_ENABLE(); 
+	
+	HAL_TIM_Base_Init(&TIM_type);	
+	HAL_TIM_Base_Start_IT(&TIM_type);
+	
+	//Starting the interrupts
+	HAL_NVIC_EnableIRQ(TIM3_IRQn);
+	HAL_NVIC_SetPriority(TIM3_IRQn, 9, 9);
 }

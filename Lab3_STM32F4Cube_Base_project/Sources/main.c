@@ -13,7 +13,9 @@
 #include "supporting_functions.h"
 #include "lis3dsh.h"
 #include "stm32f4xx_hal_gpio.h"
+#include "math.h"
 #include "keypad.h"
+#include "segments.h"
 
 /* Private variables ---------------------------------------------------------*/
 //sensitivity_component
@@ -27,6 +29,14 @@ float offset[4][3] = {{0.000947840438189 ,-0.000019936494628 ,-0.000023987290420
 void SystemClock_Config	(void);
 void configure(void);
 float* multiplyMatrix(float* input);
+float Pitch;
+int UpdateCtr;
+float first_digit, second_digit, third_digit;
+int decimal_pos = -1;
+int DISPLAY_DIRECTIONS_OR_ANGLE_FLAG = ANGLE;
+void getNewValue(float angle);
+void displayAngle(float angle);
+void displayDirections(void);
 int goal = 0;	 
 	 
 int main(void)
@@ -37,10 +47,15 @@ int main(void)
   /* Configure the system clock */
   SystemClock_Config();
 	
+	UpdateCtr = 0;
+	
 	/* Initialize all configured peripherals */
 	configure();
+	
+	rows();
 	//printf("* Configured * \n");
 	
+	AddCelsius();
 	while (1){
 		//HAL_Delay(100);
 	}
@@ -51,89 +66,161 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 
 	float readings[3];
 	float* calibrated_matrix;
-	float output[3];
+	float Ax, Ay,Az;
+	float Roll;
 	
-	LIS3DSH_ReadACC(output);
-	//output = multiplyMatrix(output);
-	//output = getNormalized(output);
-	printFloatArray(getNormalized(multiplyMatrix(output)),3);
-
+	LIS3DSH_ReadACC(readings);
+	calibrated_matrix = multiplyMatrix(readings);
+	Ax = calibrated_matrix[0];
+	Ay = calibrated_matrix[1];
+	Az = calibrated_matrix[2];
 	
-	// need to initiat with interrupt so that we know when a button is pressed 
-	if((goal<300) && input == 0){
-		if (GPIO_PIN_6){                //so if user presses button on first row check which column button was on 
+	Pitch = atan2(Ax,sqrt(pow(Ay,2) + pow(Az,2))) * 180 / 3.1415926515 + 90;
+	Roll = atan2(Ay,sqrt(pow(Ax,2) + pow(Az,2))) * 180 / 3.1415926515;
+	
+	// need to initiate with interrupt so that we know when a button is pressed 
+	if((goal<180) && input == 0){
+		if (GPIO_Pin == GPIO_PIN_6){ 
+			//printf("here12");																//so if user presses button on first row check which column button was on 
 			columns();										//getting the column bit
 			
-			if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) == 0){
+			if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0){
 				printf("1");
 				goal = 1 + (goal*10);
 			}
-			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_2) == 0){
+			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){
 				printf("2");
-				goal = 2 + (goal*10)
+				goal = 2 + (goal*10);
 			}
-			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_3) == 0){
+			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0){
 				printf("3");
-				goal = 3 + (goal*10)
+				goal = 3 + (goal*10);
 			}
 			rows();												//reset to original so that next button can be pressed 
 		}	
-		else if (GPIO_PIN_7){
+		else if (GPIO_Pin == GPIO_PIN_7){
 			columns();
 			
-			if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) == 0){
+			if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0){
 				printf("4");
 				goal = 4 + (goal*10);
 			}
-			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_2) == 0){
+			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){
 				printf("5");
-				goal = 5 + (goal*10)
+				goal = 5 + (goal*10);
 			}
-			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_3) == 0){
+			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0){
 				printf("6");
-				goal = 6 + (goal*10)
+				goal = 6 + (goal*10);
 			}
 			rows();
 		}	
-		else if (GPIO_PIN_8){
+		else if (GPIO_Pin == GPIO_PIN_8){
 			columns();
 			
-			if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) == 0){
+			if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0){
 				printf("7");
 				goal = 7 + (goal*10);
 			}
-			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_2) == 0){
+			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){
 				printf("8");
-				goal = 8 + (goal*10)
+				goal = 8 + (goal*10);
 			}
-			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_3) == 0){
+			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0){
 				printf("9");
-				goal = 9 + (goal*10)
+				goal = 9 + (goal*10);
 			}
 			rows();
 		}	
-		else if (GPIO_PIN_9){
+		else if (GPIO_Pin == GPIO_PIN_9){
 			columns();
 			
-			if(HAL_GPIO_ReadPin(GPIOD, GPIO_PIN_1) == 0){
-				
+			if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_5) == 0){
+				goal = 0;
 			}
-			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_2) == 0){
+			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_6) == 0){
 				printf("0");
-				goal = 0 + (goal*10)
+				goal = 0 + (goal*10);
 			}
-			else if(HAL_GPIO_ReadPin(GPID, GPIO_PIN_3) == 0){
+			else if(HAL_GPIO_ReadPin(GPIOB, GPIO_PIN_7) == 0){
 				input = 1;
+				printf("Changed mode, GOAL = %d\n", goal);
+				DISPLAY_DIRECTIONS_OR_ANGLE_FLAG = DIRECTIONS;
+				HAL_NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
+				HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 			}
-			rows();
+			if(input == 0){
+				rows();
+			}
 		}	
+	} 
+
+	//printf("x -> %f, y -> %f, z -> %f \n",calibrated_matrix[0],calibrated_matrix[1],calibrated_matrix[2]);
+	//printf("Pitch = %f \n", Pitch);
+	//printf("Roll = %f \n", Roll + 90);
+	//printFloatArray(readings,3);
 }
 
-	LIS3DSH_ReadACC(readings);
-	calibrated_matrix = multiplyMatrix(readings);
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+	if(DISPLAY_DIRECTIONS_OR_ANGLE_FLAG == ANGLE){
+		displayAngle(Pitch);
+	}else if(DISPLAY_DIRECTIONS_OR_ANGLE_FLAG == DIRECTIONS){
+		displayDirections();
+	}
+}
+
+void displayAngle(float angle){
+	if(UpdateCtr == 0){
+		getNewValue(angle);
+		
+		if(angle < 10){
+			decimal_pos = 1;
+		}else if(angle < 100){
+			decimal_pos = 2;
+		}else{
+			decimal_pos = 3;
+		}
+		
+		Reset_Display();
+		Display_Digit_At_Pos(1,third_digit);
+		
+		if(decimal_pos == 1){
+			AddDecimal();
+		}
+		
+		UpdateCtr++;
+	}else if(UpdateCtr == 1){
+		Reset_Display();
+		Display_Digit_At_Pos(2,second_digit);
+		
+		if(decimal_pos == 2){
+			AddDecimal();
+		}
+		
+		UpdateCtr++;
+	}else{
+		Reset_Display();
+		Display_Digit_At_Pos(3,first_digit);
+		UpdateCtr = 0;
+	}
+}
+
+void displayDirections(void){
 	
-	//printf("x -> %f, y -> %f, z -> %f \n",calibrated_matrix[0],calibrated_matrix[1],calibrated_matrix[2]);
-	printFloatArray(readings,3);
+	float upper_bound = goal + 5.0;
+	float lower_bound = goal - 5.0;
+	
+	Reset_Display();
+	
+	if(Pitch < lower_bound){ // Clockwise
+		Reset_Display();
+		Display_Digit_At_Pos(1, 12);
+	}else if(Pitch > upper_bound){ // Counter-Clockwise
+		Reset_Display();
+		Display_Digit_At_Pos(1, 11);
+	}else if(Pitch > lower_bound && Pitch < upper_bound){
+		displayAngle(goal);
+	}
 }
 
 float* multiplyMatrix(float* input){
@@ -153,6 +240,22 @@ float* multiplyMatrix(float* input){
 	}
 	
 	return calibrated_matrix;
+}
+
+void getNewValue(float angle){
+	if(angle < 10){
+			first_digit = Get_Digit_In_Place(angle*10,1);
+			second_digit = Get_Digit_In_Place(angle*10,10);
+			third_digit = Get_Digit_In_Place(angle*10,100);
+	}else if(angle < 100){
+			first_digit = Get_Digit_In_Place(angle,1);
+			second_digit = Get_Digit_In_Place(angle,10);
+			third_digit = Get_Digit_In_Place(angle,100);
+	}else{
+			first_digit = Get_Digit_In_Place(angle/10.0,1);
+			second_digit = Get_Digit_In_Place(angle/10.0,10);
+			third_digit = Get_Digit_In_Place(angle/10.0,100);
+	}
 }
 
 

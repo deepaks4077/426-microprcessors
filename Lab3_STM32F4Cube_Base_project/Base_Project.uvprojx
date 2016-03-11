@@ -452,7 +452,7 @@
                   <MiscControls></MiscControls>
                   <Define></Define>
                   <Undefine></Undefine>
-                  <IncludePath>.\Accelerometer</IncludePath>
+                  <IncludePath>.\Accelerometer;..\Lab3_STM32F4Cube_Base_project</IncludePath>
                 </VariousControls>
               </Cads>
               <Aads>
