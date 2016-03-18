@@ -11,11 +11,61 @@
 #include "stm32f4xx_hal.h"              // Keil::Device:STM32Cube HAL:Common
 #include "cmsis_os.h"                   // ARM::CMSIS:RTOS:Keil RTX
 #include "RTE_Components.h"             // Component selection
+#include "lis3dsh.h"
+#include "stm32f4xx_hal_gpio.h"
+#include "math.h"
 
+/* Private variables */
+//float Pitch;
+extern float DISPLAY_VALUE;
+
+osSemaphoreId semTemperature;
+osSemaphoreDef(semTemperature);
+
+osSemaphoreId semSevenSegments;
+osSemaphoreDef(semSevenSegments);
+
+osSemaphoreId semAcc;
+osSemaphoreDef(semAcc);
+
+osSemaphoreId semKeypad;
+osSemaphoreDef(semKeypad);
+
+uint16_t Active_GPIO_Pin;
+
+osSemaphoreId semDebounce;
+osSemaphoreDef(semDebounce);
+
+/* Private functions */
 extern void initializeLED_IO			(void);
 extern void start_Thread_LED			(void);
-extern void Thread_LED(void const *argument);
+extern void Thread_LED						(void const *argument);
 extern osThreadId tid_Thread_LED;
+
+extern void initializeAccThread		(void);
+extern void start_Thread_Acc			(void);
+extern void Thread_Acc						(void const *argument);
+extern osThreadId tid_Thread_Acc;
+
+extern void initializeTemperatureThread		(void);
+extern void start_Thread_Temperature			(void);
+extern void Thread_Temperature						(void const *argument);
+extern osThreadId tid_Thread_Temperature;
+
+extern void initializeSevenSegmentsThread(void);
+extern void Thread_SevenSegments(void const *argument);               
+extern int start_Thread_SevenSegments(void);
+extern osThreadId tid_Thread_SevenSegments;
+
+extern void initializeKeypadThread(void);
+extern void Thread_Keypad(void const *argument);               
+extern int start_Thread_Keypad(void);
+extern osThreadId tid_Thread_Keypad;
+
+void initTemperatureSemaphore(void);
+void initSevenSegmentSemaphore(void);
+void initAccSemaphore(void);
+void initKeypadSemaphore(void);
 
 /**
 	These lines are mandatory to make CMSIS-RTOS RTX work with te new Cube HAL
@@ -68,6 +118,8 @@ void SystemClock_Config(void) {
   * Main function
   */
 int main (void) {
+	
+	//printf("Hello");
 
   osKernelInitialize();                     /* initialize CMSIS-RTOS          */
 
@@ -75,10 +127,98 @@ int main (void) {
 
   SystemClock_Config();                     /* Configure the System Clock     */
 
+	initTemperatureSemaphore();
+	initSevenSegmentSemaphore();
+	initAccSemaphore();
+	semDebounce = osSemaphoreCreate(osSemaphore(semDebounce),0);
+	
 	/* User codes goes here*/
-  initializeLED_IO();                       /* Initialize LED GPIO Buttons    */
+	initializeSevenSegmentsThread();
+	start_Thread_SevenSegments();
+	
+	initializeAccThread();
+	start_Thread_Acc();
+
+	initializeTemperatureThread();
+	start_Thread_Temperature();
+	
+	initializeKeypadThread();
+	start_Thread_Keypad();
+	
+	initializeLED_IO();                       /* Initialize LED GPIO Buttons    */
   start_Thread_LED();                       /* Create LED thread              */
 	/* User codes ends here*/
   
 	osKernelStart();                          /* start thread execution         */
 }
+
+void initTemperatureSemaphore(void){
+	semTemperature = osSemaphoreCreate(osSemaphore(semTemperature),0);
+}
+
+void initSevenSegmentSemaphore(void){
+	semSevenSegments = osSemaphoreCreate(osSemaphore(semSevenSegments),0);
+}
+
+void initAccSemaphore(void){
+	semAcc = osSemaphoreCreate(osSemaphore(semAcc),0);
+}
+
+void initKeypadSemaphore(void){
+	semKeypad = osSemaphoreCreate(osSemaphore(semKeypad),0);
+}
+
+/*----------------------------------------------------------------------------
+ *      Handler and Callback functions for interrupts
+ *---------------------------------------------------------------------------*/
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
+	if(htim->Instance == TIM3){
+		osSemaphoreRelease(semSevenSegments);
+	}else if(htim->Instance == TIM2){
+		osSemaphoreRelease(semTemperature);
+	}
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
+	if(GPIO_Pin == GPIO_PIN_0){
+		osSemaphoreRelease(semAcc);
+	}else{
+		Active_GPIO_Pin = GPIO_Pin;
+		osSemaphoreRelease(semKeypad);
+	}
+}
+
+/**
+  * @brief  This function handles EXTIO (5-9) interrupt requests.
+  * @param  None
+  * @retval None
+  */
+void EXTI9_5_IRQHandler(void)
+{
+		if(DEBOUNCE_FLAG == 0){
+			// row 1
+			if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6) == 0){
+				// Delay to fix debouncing
+				//osDelay(350);
+				HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
+			}	
+			// row 2	
+			else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == 0){
+				//osDelay(350);
+				HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
+			}
+			// row 3
+			else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8) == 0){
+				//osDelay(350);
+				HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8);
+			}
+			// row 4
+			else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_9) == 0){
+				//osDelay(350);
+				HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_9);
+			}
+		}
+}
+
+
