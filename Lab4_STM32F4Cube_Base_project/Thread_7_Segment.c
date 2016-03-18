@@ -13,7 +13,7 @@
 #include "configure.h"
 #include "math.h"
 #include "segments.h"
-#define ALARM_THRESHOLD 								27
+
 
 extern void configTimer(void);
 extern void configSegmentPins(void);
@@ -33,7 +33,7 @@ int TOGGLE_PIN = 0;
 
 int DISPLAY_CTR = 0; 														// Controls the rate at which a new value is displayed
 int UPDATE_DIGIT_CTR = 0; 											// Controls the digit to display on the LED
-float DISPLAY_VALUE = 0.0;
+extern float DISPLAY_VALUE;
 
 /* Private functions */
 void configureTIM3Timer(void);
@@ -74,20 +74,8 @@ int start_Thread_SevenSegments(void) {
 void Thread_SevenSegments(void const *argument) {
 	while(1){
 		osSemaphoreWait(semSevenSegments,osWaitForever);
-		if(Temperature > ALARM_THRESHOLD){
-			osDelay(10);
-			if(TOGGLE_PIN == 0){
-				Reset_Display();
-				TOGGLE_PIN = 1;
-			}else{
-				getNewValue(Pitch);
-				displayValue();
-				TOGGLE_PIN = 0;
-			}
-		}else{
-			getNewValue(Pitch);
-			displayValue();
-		}
+		getNewValue(DISPLAY_VALUE);
+		displayValue();
 	}
 }
 
@@ -119,7 +107,7 @@ void configureTIM3Timer(void){
   * @retval None
   */
 void TIM3_IRQHandler(void){
-	DISPLAY_CTR++;
+	//DISPLAY_CTR++;
 	HAL_TIM_IRQHandler(&TIM_3);
 }
 
@@ -142,16 +130,15 @@ void getNewValue(float value){
 			second_digit = Get_Digit_In_Place(value/10.0,10);
 			third_digit = Get_Digit_In_Place(value/10.0,100);
 	}
-	
-	DISPLAY_VALUE = value;
 }
 
 void displayValue(void){
+	float absVal = fabsf(DISPLAY_VALUE);
 	if(UPDATE_DIGIT_CTR == 0){
 		
-		if(DISPLAY_VALUE< 10){
+		if(absVal< 10){
 			decimal_pos = 1;
-		}else if(DISPLAY_VALUE< 100){
+		}else if(absVal< 100){
 			decimal_pos = 2;
 		}else{
 			decimal_pos = 3;

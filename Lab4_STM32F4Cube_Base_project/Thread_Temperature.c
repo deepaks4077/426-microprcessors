@@ -12,14 +12,17 @@
 #include "stm32f4xx_hal.h"
 #include "configure.h"
 #include "math.h"
+#include "kalman_filter.h"
+#define ALARM_THRESHOLD 								29
 
-extern void coonfigADC(void);
+extern void configADC(void);
 extern void configureTemperatureTimer(void);
 extern ADC_HandleTypeDef ADC1_Handle;
 extern osSemaphoreId semTemperature;
 extern TIM_HandleTypeDef TIM_2;
+int RAISE_THE_ALARM = 0;
 float Temperature;
-
+kalman_state kstate;
 
 /* Private functions */
 void configureTemperature(void);
@@ -48,7 +51,14 @@ void Thread_Temperature(void const *argument) {
 	while(1){
 		osSemaphoreWait(semTemperature,osWaitForever);
 		Voltage = HAL_ADC_GetValue(&ADC1_Handle);
+		Voltage = kalmanFilter(Voltage,&kstate); 
 		Temperature = Convert_Voltage_To_Temperature(Voltage);
+		
+		if(Temperature > ALARM_THRESHOLD){
+			RAISE_THE_ALARM = 1;
+		}else{
+			RAISE_THE_ALARM = 0;
+		}
 	}
 }
 
@@ -56,6 +66,12 @@ void Thread_Temperature(void const *argument) {
 *			Initialize GPIOE, LISD3SH
  *---------------------------------------------------------------------------*/
 void initializeTemperatureThread(void){
+	kstate.q =	0.15;
+	kstate.r =	135;	
+	kstate.x =	0.0;
+	kstate.p =	1000;
+	kstate.k =	0.0;
+	
 	configADC();
 	configureTemperatureTimer();
 }

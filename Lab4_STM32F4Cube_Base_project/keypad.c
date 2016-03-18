@@ -30,7 +30,7 @@ void rows(void){
 	
 	__HAL_RCC_GPIOC_CLK_ENABLE();
 	Rows.Pin = GPIO_PIN_9 | GPIO_PIN_8 | GPIO_PIN_7 | GPIO_PIN_6;
-	Rows.Mode = GPIO_MODE_IT_FALLING;  														
+	Rows.Mode = GPIO_MODE_INPUT;  														
 	Rows.Pull = GPIO_PULLUP;
 	Rows.Speed = GPIO_SPEED_LOW;
 	HAL_GPIO_Init(GPIOC ,&Rows);
@@ -42,9 +42,9 @@ void rows(void){
 	Columns.Speed = GPIO_SPEED_LOW;
 	HAL_GPIO_Init(GPIOB ,&Columns);
 	
-	HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
-	HAL_NVIC_SetPriority(EXTI9_5_IRQn ,1,2);
-	HAL_NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
+	//HAL_NVIC_EnableIRQ(EXTI9_5_IRQn);
+	//HAL_NVIC_SetPriority(EXTI9_5_IRQn ,1,2);
+	//HAL_NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
 }
 
 
@@ -56,10 +56,10 @@ void rows(void){
 */
 void columns(void){
 	
-	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_9);
-	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
-	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_7);
-	__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);
+	//__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_9);
+	//__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_8);
+	//__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_7);
+	//__HAL_GPIO_EXTI_CLEAR_IT(GPIO_PIN_6);
 	
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 	Columns.Pin = GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
@@ -75,6 +75,6 @@ void columns(void){
 	Rows.Speed = GPIO_SPEED_LOW;
 	HAL_GPIO_Init(GPIOC ,&Rows);
 	
-	HAL_NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
-	HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
+	//HAL_NVIC_ClearPendingIRQ(EXTI9_5_IRQn);
+	//HAL_NVIC_DisableIRQ(EXTI9_5_IRQn);
 }

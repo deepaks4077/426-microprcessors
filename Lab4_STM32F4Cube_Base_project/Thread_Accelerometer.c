@@ -12,6 +12,7 @@
 #include "stm32f4xx_hal.h"
 #include "configure.h"
 #include "math.h"
+#include "kalman_filter.h"
 
 extern void configGPIOE(void);
 extern void configLISD3SH(void);
@@ -27,6 +28,9 @@ float offset[4][3] = {{0.000947840438189, -0.000019936494628 ,-0.000023987290420
 
 float Pitch;
 float Roll;
+kalman_state kSx;
+kalman_state kSy;
+kalman_state kSz;
 
 /* Private functions */
 float* multiplyMatrix(float* input);
@@ -64,6 +68,24 @@ void Thread_Acc(void const *argument) {
 *			Initialize GPIOE, LISD3SH
  *---------------------------------------------------------------------------*/
 void initializeAccThread(void){
+	kSx.k = 0.0;
+	kSx.p = 1000;
+	kSx.q = 5;
+	kSx.r = 240;
+	kSx.x = 0.0;
+
+	kSy.k = 0.0;
+	kSy.p = 1000;
+	kSy.q = 5;
+	kSy.r = 240;
+	kSy.x = 0.0;
+
+	kSz.k = 0.0;
+	kSz.p = 1000;
+	kSz.q = 5;
+	kSz.r = 240;
+	kSz.x = 1.0;
+	
 	configureGPIOE();
 	configureAcc();
 }
@@ -89,9 +111,9 @@ void readAccelerometerData(void){
 	
 		kalman_output = multiplyMatrix(readings);
 	
-		//	readings[0] = kalmanFilter(readings[0],&kSx); 
-		//	readings[1] = kalmanFilter(readings[1],&kSy);
-		//	readings[2] = kalmanFilter(readings[2],&kSz);
+		readings[0] = kalmanFilter(readings[0],&kSx); 
+		readings[1] = kalmanFilter(readings[1],&kSy);
+		readings[2] = kalmanFilter(readings[2],&kSz);
 	
 		calibrated_matrix = multiplyMatrix(readings);
 		Ax = calibrated_matrix[0];

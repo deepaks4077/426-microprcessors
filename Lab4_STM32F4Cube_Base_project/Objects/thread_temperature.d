@@ -40,3 +40,4 @@
 .\objects\thread_temperature.o: .\Headers\supporting_functions.h
 .\objects\thread_temperature.o: .\Accelerometer\inc\lis3dsh.h
 .\objects\thread_temperature.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
+.\objects\thread_temperature.o: kalman_filter.h

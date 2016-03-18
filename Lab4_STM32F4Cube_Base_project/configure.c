@@ -6,12 +6,14 @@
 GPIO_InitTypeDef GPIO_D;
 GPIO_InitTypeDef GPIO_E;
 LIS3DSH_InitTypeDef LIS3DSH_InitStruct;
+TIM_HandleTypeDef TIM_4;
 TIM_HandleTypeDef TIM_3;
 TIM_HandleTypeDef TIM_2;
 ADC_HandleTypeDef ADC1_Handle;
 
 void configureTemperatureTimer(void);
 void configureSevenSegmentTimer(void);
+void configureKeypadTimer(void);
 
 void configure(void){
 	configGPIOE();
@@ -76,16 +78,16 @@ void configSegmentPins(void){
 	HAL_GPIO_Init(GPIOE,&GPIO_E);
 }
 
-void configTimer(void)
-{
+void configTimer(void){
 	configureSevenSegmentTimer();
 	configureTemperatureTimer();
+	configureKeypadTimer();
 }
 
 void configureTemperatureTimer(void){
 	TIM_Base_InitTypeDef TIM_Time;
 	
-	TIM_Time.Period = 1000;
+	TIM_Time.Period = 40;
 	TIM_Time.CounterMode = TIM_COUNTERMODE_UP;
 	TIM_Time.Prescaler = 21000;
 	TIM_Time.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -109,7 +111,7 @@ void configureTemperatureTimer(void){
 void configureSevenSegmentTimer(void){
 	TIM_Base_InitTypeDef TIM_Time;
 	
-	TIM_Time.Period = 10;
+	TIM_Time.Period = 20;
 	TIM_Time.CounterMode = TIM_COUNTERMODE_UP;
 	TIM_Time.Prescaler = 21000;
 	TIM_Time.ClockDivision = TIM_CLOCKDIVISION_DIV1;
@@ -128,6 +130,35 @@ void configureSevenSegmentTimer(void){
 	
 	HAL_NVIC_EnableIRQ(TIM3_IRQn);
 	HAL_NVIC_SetPriority(TIM3_IRQn, 9, 9);
+}
+
+void configureKeypadTimer(void)
+{
+	TIM_Base_InitTypeDef TIM_TimeBaseStructure;
+	
+	TIM_TimeBaseStructure.Period = 200;
+	TIM_TimeBaseStructure.Prescaler = 42000;
+	TIM_TimeBaseStructure.ClockDivision = TIM_CLOCKDIVISION_DIV4;
+	TIM_TimeBaseStructure.CounterMode = TIM_COUNTERMODE_UP;
+	
+	/* Fill in the TIM handle with the required timer and init struct*/
+	TIM_4.Instance = TIM4;
+	TIM_4.Init = TIM_TimeBaseStructure;
+	TIM_4.Channel = HAL_TIM_ACTIVE_CHANNEL_CLEARED;
+	TIM_4.Lock = HAL_UNLOCKED;
+	TIM_4.State = HAL_TIM_STATE_READY;
+
+	HAL_TIM_Base_MspInit(&TIM_4);
+	
+	/* Enable clock for TIM4 */
+	__TIM4_CLK_ENABLE();
+	
+	HAL_TIM_Base_Init(&TIM_4);
+	HAL_TIM_Base_Start_IT(&TIM_4);
+	
+	/* Configure NVIC */
+	HAL_NVIC_EnableIRQ(TIM4_IRQn);
+	HAL_NVIC_SetPriority(TIM4_IRQn, 0,0);
 }
 
 /** Configure and start ADC1 -------------------------------------------------------------*/

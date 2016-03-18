@@ -16,8 +16,7 @@
 #include "math.h"
 
 /* Private variables */
-//float Pitch;
-extern float DISPLAY_VALUE;
+float DISPLAY_VALUE;
 
 osSemaphoreId semTemperature;
 osSemaphoreDef(semTemperature);
@@ -35,6 +34,19 @@ uint16_t Active_GPIO_Pin;
 
 osSemaphoreId semDebounce;
 osSemaphoreDef(semDebounce);
+
+
+/* These variables contol the state of the FSM*/
+int DISPLAY_ACC = 1;
+int DISPLAY_TEMP = 0;
+extern int RAISE_THE_ALARM;
+int ACC_PITCH = 1;
+int ACC_ROLL = 0;
+int toggle_on = 0;
+
+extern float Pitch;
+extern float Roll;
+extern float Temperature;
 
 /* Private functions */
 extern void initializeLED_IO			(void);
@@ -61,6 +73,8 @@ extern void initializeKeypadThread(void);
 extern void Thread_Keypad(void const *argument);               
 extern int start_Thread_Keypad(void);
 extern osThreadId tid_Thread_Keypad;
+
+extern void Reset_Display(void);
 
 void initTemperatureSemaphore(void);
 void initSevenSegmentSemaphore(void);
@@ -118,8 +132,6 @@ void SystemClock_Config(void) {
   * Main function
   */
 int main (void) {
-	
-	//printf("Hello");
 
   osKernelInitialize();                     /* initialize CMSIS-RTOS          */
 
@@ -130,7 +142,7 @@ int main (void) {
 	initTemperatureSemaphore();
 	initSevenSegmentSemaphore();
 	initAccSemaphore();
-	semDebounce = osSemaphoreCreate(osSemaphore(semDebounce),0);
+	initKeypadSemaphore();
 	
 	/* User codes goes here*/
 	initializeSevenSegmentsThread();
@@ -145,8 +157,6 @@ int main (void) {
 	initializeKeypadThread();
 	start_Thread_Keypad();
 	
-	initializeLED_IO();                       /* Initialize LED GPIO Buttons    */
-  start_Thread_LED();                       /* Create LED thread              */
 	/* User codes ends here*/
   
 	osKernelStart();                          /* start thread execution         */
@@ -158,7 +168,7 @@ void initTemperatureSemaphore(void){
 
 void initSevenSegmentSemaphore(void){
 	semSevenSegments = osSemaphoreCreate(osSemaphore(semSevenSegments),0);
-}
+ }
 
 void initAccSemaphore(void){
 	semAcc = osSemaphoreCreate(osSemaphore(semAcc),0);
@@ -173,8 +183,28 @@ void initKeypadSemaphore(void){
  *---------------------------------------------------------------------------*/
 
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
-	if(htim->Instance == TIM3){
-		osSemaphoreRelease(semSevenSegments);
+	
+	if(htim->Instance == TIM4){
+		osSemaphoreRelease(semKeypad);
+	}else if(htim->Instance == TIM3){
+		if (((toggle_on < 50) && RAISE_THE_ALARM == 1) || (RAISE_THE_ALARM == 0)){
+			if(DISPLAY_ACC == 1){
+				if (ACC_PITCH==1){
+					DISPLAY_VALUE = Pitch;
+				}else if (ACC_ROLL==1){
+					DISPLAY_VALUE = Roll;
+				}
+			}else if(DISPLAY_TEMP == 1){
+				DISPLAY_VALUE = Temperature;	
+			}
+			toggle_on++;
+			osSemaphoreRelease(semSevenSegments);
+		}else if ((toggle_on >= 50) && RAISE_THE_ALARM == 1){
+			Reset_Display();
+			toggle_on++;
+			if (toggle_on > 100)
+				toggle_on = 0;
+		}
 	}else if(htim->Instance == TIM2){
 		osSemaphoreRelease(semTemperature);
 	}
@@ -183,42 +213,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim){
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin){
 	if(GPIO_Pin == GPIO_PIN_0){
 		osSemaphoreRelease(semAcc);
-	}else{
-		Active_GPIO_Pin = GPIO_Pin;
-		osSemaphoreRelease(semKeypad);
 	}
-}
-
-/**
-  * @brief  This function handles EXTIO (5-9) interrupt requests.
-  * @param  None
-  * @retval None
-  */
-void EXTI9_5_IRQHandler(void)
-{
-		if(DEBOUNCE_FLAG == 0){
-			// row 1
-			if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_6) == 0){
-				// Delay to fix debouncing
-				//osDelay(350);
-				HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_6);
-			}	
-			// row 2	
-			else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_7) == 0){
-				//osDelay(350);
-				HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_7);
-			}
-			// row 3
-			else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8) == 0){
-				//osDelay(350);
-				HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_8);
-			}
-			// row 4
-			else if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_9) == 0){
-				//osDelay(350);
-				HAL_GPIO_EXTI_IRQHandler(GPIO_PIN_9);
-			}
-		}
 }
 
 
